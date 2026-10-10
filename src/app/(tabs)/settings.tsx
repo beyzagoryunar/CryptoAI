@@ -7,6 +7,7 @@ import {
   Switch,
   TouchableOpacity,
   Alert,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/theme';
@@ -20,7 +21,16 @@ export default function SettingsScreen() {
   const { user, logout, toggleBiometrics, loginDemoUser } = useAuth();
   const { language, setLanguage, t } = useLanguage();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    if (Platform.OS === 'web') {
+      const confirmLogout = typeof window !== 'undefined' ? window.confirm('Oturumu kapatıp giriş ekranına dönmek istiyor musunuz?') : true;
+      if (confirmLogout) {
+        await logout();
+        router.replace('/(auth)/login');
+      }
+      return;
+    }
+
     Alert.alert(
       t('logout'),
       'Oturumu kapatıp giriş ekranına dönmek istiyor musunuz?',
@@ -29,8 +39,8 @@ export default function SettingsScreen() {
         {
           text: t('logout'),
           style: 'destructive',
-          onPress: () => {
-            logout();
+          onPress: async () => {
+            await logout();
             router.replace('/(auth)/login');
           },
         },

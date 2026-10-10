@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/theme';
@@ -22,6 +23,14 @@ export default function PortfolioScreen() {
   const isProfit = totalPnL >= 0;
 
   const handleClosePosition = (id: string, symbol: string, pnl: number) => {
+    if (Platform.OS === 'web') {
+      const confirmed = typeof window !== 'undefined' ? window.confirm(`${symbol} pozisyonunu mevcut fiyattan kapatmak istiyor musunuz? (Net K/Z: ${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)})`) : true;
+      if (confirmed) {
+        closePosition(id, 'Manuel');
+      }
+      return;
+    }
+
     Alert.alert(
       'Pozisyon Kapatma',
       `${symbol} pozisyonunu mevcut fiyattan kapatmak istiyor musunuz? (Net K/Z: ${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)})`,
@@ -37,6 +46,14 @@ export default function PortfolioScreen() {
   };
 
   const handleReset = () => {
+    if (Platform.OS === 'web') {
+      const confirmed = typeof window !== 'undefined' ? window.confirm('Sanal bakiyeniz başlangıç değeri olan $10.000 seviyesine döndürülecektir.') : true;
+      if (confirmed) {
+        resetPortfolio();
+      }
+      return;
+    }
+
     Alert.alert(
       'Cüzdanı Sıfırla',
       'Sanal bakiyeniz başlangıç değeri olan $10.000 seviyesine döndürülecektir.',
