@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, TextInput, Alert, Platform } from 'react-native';
 import { CryptoAsset } from '../types/crypto';
-import { Colors } from '../constants/theme';
 import { usePortfolio } from '../context/PortfolioContext';
+import { useTheme } from '../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 
 interface QuickTradeModalProps {
@@ -13,6 +13,7 @@ interface QuickTradeModalProps {
 
 export const QuickTradeModal: React.FC<QuickTradeModalProps> = ({ visible, onClose, coin }) => {
   const { cashBalance, openPosition } = usePortfolio();
+  const { colors } = useTheme();
   const [side, setSide] = useState<'BUY' | 'SELL'>('BUY');
   const [amountStr, setAmountStr] = useState<string>('500');
 
@@ -25,101 +26,140 @@ export const QuickTradeModal: React.FC<QuickTradeModalProps> = ({ visible, onClo
 
   const handleExecute = () => {
     if (amountUsd <= 0) {
-      Alert.alert('Geçersiz Tutar', 'Lütfen 0 dan büyük bir işlem tutarı girin.');
+      if (Platform.OS === 'web') {
+        window.alert('Lütfen 0 dan büyük bir işlem tutarı girin.');
+      } else {
+        Alert.alert('Geçersiz Tutar', 'Lütfen 0 dan büyük bir işlem tutarı girin.');
+      }
       return;
     }
     if (amountUsd > cashBalance) {
-      Alert.alert('Yetersiz Bakiye', `Mevcut nakit bakiyeniz: $${cashBalance.toFixed(2)}`);
+      const msg = `Mevcut nakit bakiyeniz: $${cashBalance.toFixed(2)}`;
+      if (Platform.OS === 'web') {
+        window.alert(`Yetersiz Bakiye\n${msg}`);
+      } else {
+        Alert.alert('Yetersiz Bakiye', msg);
+      }
       return;
     }
 
     const success = openPosition(coin.symbol, side, amountUsd, false);
     if (success) {
-      Alert.alert(
-        'Sanal Emir Gerçekleşti',
-        `${coin.symbol} için $${amountUsd} tutarında ${side === 'BUY' ? 'Alım' : 'Satış'} pozisyonu açıldı.`
-      );
+      const msg = `${coin.symbol} için $${amountUsd} tutarında ${side === 'BUY' ? 'Alım' : 'Satış'} pozisyonu açıldı.`;
+      if (Platform.OS === 'web') {
+        window.alert(`Sanal Emir Gerçekleşti\n${msg}`);
+      } else {
+        Alert.alert('Sanal Emir Gerçekleşti', msg);
+      }
       onClose();
     }
   };
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={styles.overlay}>
-        <View style={styles.modalContent}>
+      <View style={[styles.overlay, { backgroundColor: colors.overlay }]}>
+        <View style={[styles.modalContent, { backgroundColor: colors.modalBg, borderTopColor: colors.border }]}>
           {/* Header */}
           <View style={styles.header}>
             <View>
-              <Text style={styles.modalTitle}>Sanal İşlem Emri</Text>
-              <Text style={styles.modalSubtitle}>{coin.name} ({coin.symbol}) • Anlık: ${coin.price.toLocaleString()}</Text>
+              <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>Sanal İşlem Emri</Text>
+              <Text style={[styles.modalSubtitle, { color: colors.textSecondary }]}>
+                {coin.name} ({coin.symbol}) • Anlık: ${coin.price.toLocaleString()}
+              </Text>
             </View>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-              <Ionicons name="close" size={20} color={Colors.textSecondary} />
+            <TouchableOpacity
+              onPress={onClose}
+              style={[styles.closeBtn, { backgroundColor: colors.cardBgElevated }]}
+            >
+              <Ionicons name="close" size={20} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
           {/* Buy / Sell Tabs */}
-          <View style={styles.sideSelector}>
+          <View style={[styles.sideSelector, { backgroundColor: colors.cardBgElevated }]}>
             <TouchableOpacity
               onPress={() => setSide('BUY')}
-              style={[styles.sideTab, side === 'BUY' && styles.buyActiveTab]}
+              style={[
+                styles.sideTab,
+                side === 'BUY' && { backgroundColor: colors.bullish },
+              ]}
             >
-              <Text style={[styles.sideTabText, side === 'BUY' && styles.sideActiveText]}>AL (BUY)</Text>
+              <Text style={[styles.sideTabText, { color: side === 'BUY' ? '#FFFFFF' : colors.textSecondary }]}>
+                AL (BUY)
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setSide('SELL')}
-              style={[styles.sideTab, side === 'SELL' && styles.sellActiveTab]}
+              style={[
+                styles.sideTab,
+                side === 'SELL' && { backgroundColor: colors.bearish },
+              ]}
             >
-              <Text style={[styles.sideTabText, side === 'SELL' && styles.sideActiveText]}>SAT (SELL)</Text>
+              <Text style={[styles.sideTabText, { color: side === 'SELL' ? '#FFFFFF' : colors.textSecondary }]}>
+                SAT (SELL)
+              </Text>
             </TouchableOpacity>
           </View>
 
           {/* Balance info */}
           <View style={styles.balanceInfo}>
-            <Text style={styles.balanceLabel}>Kullanılabilir Sanal Bakiye:</Text>
-            <Text style={styles.balanceValue}>${cashBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</Text>
+            <Text style={[styles.balanceLabel, { color: colors.textSecondary }]}>Kullanılabilir Sanal Bakiye:</Text>
+            <Text style={[styles.balanceValue, { color: colors.bullish }]}>
+              ${cashBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            </Text>
           </View>
 
           {/* Amount input */}
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputPrefix}>$</Text>
+          <View style={[styles.inputContainer, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
+            <Text style={[styles.inputPrefix, { color: colors.textMuted }]}>$</Text>
             <TextInput
-              style={styles.textInput}
+              style={[styles.textInput, { color: colors.textPrimary }]}
               keyboardType="numeric"
               value={amountStr}
               onChangeText={setAmountStr}
               placeholder="0.00"
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={colors.textMuted}
             />
-            <Text style={styles.inputSuffix}>USD</Text>
+            <Text style={[styles.inputSuffix, { color: colors.textMuted }]}>USD</Text>
           </View>
 
-          <Text style={styles.approxQty}>≈ {coinQuantity} {coin.symbol}</Text>
+          <Text style={[styles.approxQty, { color: colors.textMuted }]}>≈ {coinQuantity} {coin.symbol}</Text>
 
           {/* Presets */}
           <View style={styles.presetsRow}>
-            {[100, 250, 500, 1000].map((val) => (
-              <TouchableOpacity
-                key={val}
-                onPress={() => handleSelectPreset(val)}
-                style={[styles.presetBtn, amountStr === val.toString() && styles.presetBtnActive]}
-              >
-                <Text style={styles.presetText}>${val}</Text>
-              </TouchableOpacity>
-            ))}
+            {[100, 250, 500, 1000].map((val) => {
+              const active = amountStr === val.toString();
+              return (
+                <TouchableOpacity
+                  key={val}
+                  onPress={() => handleSelectPreset(val)}
+                  style={[
+                    styles.presetBtn,
+                    {
+                      backgroundColor: active ? colors.primaryMuted : colors.cardBgElevated,
+                      borderColor: active ? colors.primary : colors.border,
+                    },
+                  ]}
+                >
+                  <Text style={[styles.presetText, { color: active ? colors.primary : colors.textSecondary }]}>
+                    ${val}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
             <TouchableOpacity
               onPress={() => handleSelectPreset(Math.floor(cashBalance * 0.25))}
-              style={styles.presetBtn}
+              style={[styles.presetBtn, { backgroundColor: colors.cardBgElevated, borderColor: colors.border }]}
             >
-              <Text style={styles.presetText}>%25</Text>
+              <Text style={[styles.presetText, { color: colors.textSecondary }]}>%25</Text>
             </TouchableOpacity>
           </View>
 
           {/* AI Signal Recommendation note */}
-          <View style={styles.aiHintBox}>
-            <Ionicons name="sparkles" size={14} color={Colors.primary} />
-            <Text style={styles.aiHintText}>
-              Yapay Zeka Sinyali: <Text style={{ fontWeight: '700', color: Colors.primary }}>{coin.signal.action}</Text> (Güven: %{coin.signal.confidence})
+          <View style={[styles.aiHintBox, { backgroundColor: colors.primaryMuted, borderColor: colors.primary }]}>
+            <Ionicons name="sparkles" size={14} color={colors.primary} />
+            <Text style={[styles.aiHintText, { color: colors.textPrimary }]}>
+              Yapay Zeka Sinyali: <Text style={{ fontWeight: '700', color: colors.primary }}>{coin.signal.action}</Text> (Güven: %{coin.signal.confidence})
             </Text>
           </View>
 
@@ -127,7 +167,7 @@ export const QuickTradeModal: React.FC<QuickTradeModalProps> = ({ visible, onClo
           <TouchableOpacity
             onPress={handleExecute}
             activeOpacity={0.8}
-            style={[styles.submitButton, { backgroundColor: side === 'BUY' ? Colors.bullish : Colors.bearish }]}
+            style={[styles.submitButton, { backgroundColor: side === 'BUY' ? colors.bullish : colors.bearish }]}
           >
             <Text style={styles.submitButtonText}>
               {side === 'BUY' ? 'Sanal Alım Yap' : 'Sanal Satış Emri Ver'} (${amountUsd})
@@ -142,16 +182,13 @@ export const QuickTradeModal: React.FC<QuickTradeModalProps> = ({ visible, onClo
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: Colors.overlay,
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: Colors.modalBg,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 20,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
   },
   header: {
     flexDirection: 'row',
@@ -162,24 +199,20 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: Colors.textPrimary,
   },
   modalSubtitle: {
     fontSize: 12,
-    color: Colors.textSecondary,
     marginTop: 2,
   },
   closeBtn: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: Colors.cardBgElevated,
     alignItems: 'center',
     justifyContent: 'center',
   },
   sideSelector: {
     flexDirection: 'row',
-    backgroundColor: Colors.cardBg,
     borderRadius: 12,
     padding: 4,
     marginBottom: 16,
@@ -190,19 +223,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 8,
   },
-  buyActiveTab: {
-    backgroundColor: Colors.bullish,
-  },
-  sellActiveTab: {
-    backgroundColor: Colors.bearish,
-  },
   sideTabText: {
-    color: Colors.textSecondary,
+    fontSize: 12,
     fontWeight: '700',
-    fontSize: 13,
-  },
-  sideActiveText: {
-    color: '#FFFFFF',
   },
   balanceInfo: {
     flexDirection: 'row',
@@ -211,46 +234,38 @@ const styles = StyleSheet.create({
   },
   balanceLabel: {
     fontSize: 12,
-    color: Colors.textMuted,
   },
   balanceValue: {
     fontSize: 12,
     fontWeight: '700',
-    color: Colors.bullish,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.inputBg,
-    borderWidth: 1,
-    borderColor: Colors.inputBorder,
     borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginBottom: 6,
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
   },
   inputPrefix: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
-    color: Colors.textSecondary,
-    marginRight: 8,
+    marginRight: 6,
   },
   textInput: {
     flex: 1,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
-    color: Colors.textPrimary,
   },
   inputSuffix: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.textMuted,
+    fontSize: 12,
+    fontWeight: '700',
   },
   approxQty: {
-    fontSize: 12,
-    color: Colors.textSecondary,
+    fontSize: 11,
+    marginTop: 6,
+    marginBottom: 12,
     textAlign: 'right',
-    marginBottom: 14,
   },
   presetsRow: {
     flexDirection: 'row',
@@ -259,43 +274,35 @@ const styles = StyleSheet.create({
   },
   presetBtn: {
     flex: 1,
-    backgroundColor: Colors.cardBgElevated,
     paddingVertical: 8,
     borderRadius: 8,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  presetBtnActive: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.primaryMuted,
   },
   presetText: {
     fontSize: 12,
     fontWeight: '600',
-    color: Colors.textPrimary,
   },
   aiHintBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 216, 246, 0.08)',
+    gap: 8,
     padding: 10,
     borderRadius: 10,
-    marginBottom: 18,
-    gap: 8,
+    borderWidth: 1,
+    marginBottom: 16,
   },
   aiHintText: {
-    fontSize: 12,
-    color: Colors.textSecondary,
+    fontSize: 11,
   },
   submitButton: {
-    paddingVertical: 15,
     borderRadius: 14,
+    paddingVertical: 14,
     alignItems: 'center',
   },
   submitButtonText: {
     color: '#FFFFFF',
+    fontSize: 14,
     fontWeight: '700',
-    fontSize: 15,
   },
 });

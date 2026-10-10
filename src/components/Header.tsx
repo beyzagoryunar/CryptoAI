@@ -1,14 +1,15 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Colors } from '../constants/theme';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
 export const Header: React.FC = () => {
   const { user } = useAuth();
   const { language, setLanguage } = useLanguage();
+  const { colors, isDark, toggleTheme } = useTheme();
 
   const toggleLanguage = () => {
     setLanguage(language === 'tr' ? 'en' : 'tr');
@@ -19,30 +20,51 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
       {/* Brand & Status */}
       <View style={styles.brandContainer}>
         <View style={styles.logoRow}>
-          <View style={styles.pulseDot} />
-          <Text style={styles.brandName}>Crypto<Text style={styles.brandAccent}>AI</Text></Text>
-          <View style={styles.tag}>
-            <Text style={styles.tagText}>SDK 57</Text>
+          <View style={[styles.pulseDot, { backgroundColor: colors.bullish }]} />
+          <Text style={[styles.brandName, { color: colors.textPrimary }]}>
+            Crypto<Text style={{ color: colors.primary }}>AI</Text>
+          </Text>
+          <View style={[styles.tag, { backgroundColor: colors.cardBgElevated, borderColor: colors.borderLight }]}>
+            <Text style={[styles.tagText, { color: colors.textSecondary }]}>SDK 57</Text>
           </View>
         </View>
-        <Text style={styles.subtext}>Karar Destek & Otopilot Sistemi</Text>
+        <Text style={[styles.subtext, { color: colors.textMuted }]}>Karar Destek & Otopilot Sistemi</Text>
       </View>
 
-      {/* Actions: Language & User */}
+      {/* Actions: Theme Toggle, Language & User */}
       <View style={styles.actionsContainer}>
+        {/* Quick Theme Toggle */}
+        <TouchableOpacity
+          onPress={toggleTheme}
+          style={[styles.iconActionBtn, { backgroundColor: colors.cardBgElevated, borderColor: colors.border }]}
+          activeOpacity={0.7}
+        >
+          <Ionicons
+            name={isDark ? 'sunny-outline' : 'moon-outline'}
+            size={16}
+            color={colors.primary}
+          />
+        </TouchableOpacity>
+
         {/* Language switch */}
-        <TouchableOpacity onPress={toggleLanguage} style={styles.langBtn}>
-          <Ionicons name="globe-outline" size={14} color={Colors.primary} />
-          <Text style={styles.langText}>{language.toUpperCase()}</Text>
+        <TouchableOpacity
+          onPress={toggleLanguage}
+          style={[styles.langBtn, { backgroundColor: colors.cardBgElevated, borderColor: colors.border }]}
+        >
+          <Ionicons name="globe-outline" size={13} color={colors.primary} />
+          <Text style={[styles.langText, { color: colors.textPrimary }]}>{language.toUpperCase()}</Text>
         </TouchableOpacity>
 
         {/* Profile Avatar */}
-        <TouchableOpacity onPress={handleProfilePress} style={styles.avatarBtn}>
-          <Text style={styles.avatarText}>
+        <TouchableOpacity
+          onPress={handleProfilePress}
+          style={[styles.avatarBtn, { backgroundColor: colors.primaryMuted, borderColor: colors.primary }]}
+        >
+          <Text style={[styles.avatarText, { color: colors.primary }]}>
             {user ? user.name.slice(0, 2).toUpperCase() : 'AI'}
           </Text>
         </TouchableOpacity>
@@ -59,9 +81,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 8,
     paddingBottom: 12,
-    backgroundColor: Colors.background,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   brandContainer: {
     flex: 1,
@@ -75,69 +95,62 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: Colors.bullish,
   },
   brandName: {
     fontSize: 20,
     fontWeight: '800',
-    color: Colors.textPrimary,
     letterSpacing: 0.5,
   },
-  brandAccent: {
-    color: Colors.primary,
-  },
   tag: {
-    backgroundColor: Colors.cardBgElevated,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: Colors.borderLight,
   },
   tagText: {
     fontSize: 9,
     fontWeight: '700',
-    color: Colors.textSecondary,
   },
   subtext: {
     fontSize: 11,
-    color: Colors.textMuted,
     marginTop: 2,
   },
   actionsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
+  },
+  iconActionBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
   },
   langBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: Colors.cardBgElevated,
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   langText: {
     fontSize: 11,
     fontWeight: '700',
-    color: Colors.textPrimary,
   },
   avatarBtn: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: Colors.primaryMuted,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     borderWidth: 1.5,
-    borderColor: Colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
-    color: Colors.primary,
   },
 });

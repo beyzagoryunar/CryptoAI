@@ -1,23 +1,16 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { Colors } from '../../constants/theme';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useTheme } from '../../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function RegisterScreen() {
   const { registerWithEmail, loginWithGoogle, loginWithApple } = useAuth();
   const { t } = useLanguage();
+  const { colors } = useTheme();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -25,27 +18,35 @@ export default function RegisterScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const showAlert = (title: string, msg: string) => {
+    if (Platform.OS === 'web') {
+      window.alert(`${title}\n${msg}`);
+    } else {
+      Alert.alert(title, msg);
+    }
+  };
+
   const handleRegister = async () => {
     if (!name || !email || !password) {
-      Alert.alert('Eksik Bilgi', 'Lütfen tüm alanları doldurun.');
+      showAlert('Eksik Bilgi', 'Lütfen tüm alanları doldurun.');
       return;
     }
     if (password !== confirmPassword) {
-      Alert.alert('Şifre Uyuşmazlığı', 'Girdiğiniz şifreler birbiriyle eşleşmiyor.');
+      showAlert('Şifre Uyuşmazlığı', 'Girdiğiniz şifreler birbiriyle eşleşmiyor.');
       return;
     }
     if (password.length < 6) {
-      Alert.alert('Zayıf Şifre', 'Şifreniz en az 6 karakter olmalıdır.');
+      showAlert('Zayıf Şifre', 'Şifreniz en az 6 karakter olmalıdır.');
       return;
     }
     setLoading(true);
     const res = await registerWithEmail(name, email, password);
     setLoading(false);
     if (res.success) {
-      Alert.alert('Kayıt Başarılı', 'Firebase hesabınız oluşturuldu. $10.000 sanal bakiyeniz cüzdanınıza tanımlandı.');
+      showAlert('Kayıt Başarılı', 'Firebase hesabınız oluşturuldu. $10.000 sanal bakiyeniz cüzdanınıza tanımlandı.');
       router.replace('/(tabs)');
     } else {
-      Alert.alert('Kayıt Başarısız', res.error || 'Kayıt işlemi sırasında bir hata oluştu.');
+      showAlert('Kayıt Başarısız', res.error || 'Kayıt işlemi sırasında bir hata oluştu.');
     }
   };
 
@@ -56,38 +57,49 @@ export default function RegisterScreen() {
     if (res.success) {
       router.replace('/(tabs)');
     } else if (res.error) {
-      Alert.alert('Google Girişi', res.error);
+      showAlert('Google Girişi', res.error);
     }
   };
 
   const handleAppleSignup = async () => {
-    Alert.alert(
+    showAlert(
       'Apple ile Kayıt',
-      'Apple Kimliği doğrulaması gerçek iOS cihaz sertifikası gerektirir. Lütfen gerçek Firebase doğrulaması için E-Posta ve Şifrenizle Kayıt Olun.'
+      'Apple Kimliği doğrulaması gerçek iOS cihaz sertifikası gerektirir. Lütfen gerçek Firebase doğrulaması için E-Posta ve Şifrenizle Kayıt Olup giriş yapın.'
     );
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Header */}
         <View style={styles.brandHeader}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <Ionicons name="arrow-back" size={20} color={Colors.textPrimary} />
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={[styles.backBtn, { backgroundColor: colors.cardBgElevated, borderColor: colors.border }]}
+          >
+            <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
           </TouchableOpacity>
-          <Text style={styles.brandTitle}>Yeni Hesap Oluştur</Text>
-          <Text style={styles.brandSubtitle}>Yapay zeka destekli sanal portföyünüzü hemen yönetin</Text>
+          <Text style={[styles.brandTitle, { color: colors.textPrimary }]}>
+            Yeni Hesap <Text style={{ color: colors.primary }}>Oluştur</Text>
+          </Text>
+          <Text style={[styles.brandSubtitle, { color: colors.textSecondary }]}>
+            {t('register_subtitle')} • Anında $10.000 Sanal Bakiye
+          </Text>
         </View>
 
-        <View style={styles.formCard}>
+        {/* Form Card */}
+        <View style={[styles.formCard, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
+          <Text style={[styles.formTitle, { color: colors.textPrimary }]}>{t('register_title')}</Text>
+
           {/* Name input */}
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>{t('name')}</Text>
-            <View style={styles.inputBox}>
-              <Ionicons name="person-outline" size={18} color={Colors.textMuted} style={styles.inputIcon} />
+            <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>{t('name')}</Text>
+            <View style={[styles.inputBox, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
+              <Ionicons name="person-outline" size={18} color={colors.textMuted} style={styles.inputIcon} />
               <TextInput
-                style={styles.textInput}
-                placeholder="Adınız ve Soyadınız"
-                placeholderTextColor={Colors.textMuted}
+                style={[styles.textInput, { color: colors.textPrimary }]}
+                placeholder="Adınız Soyadınız"
+                placeholderTextColor={colors.textMuted}
                 value={name}
                 onChangeText={setName}
               />
@@ -96,13 +108,13 @@ export default function RegisterScreen() {
 
           {/* Email input */}
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>{t('email')}</Text>
-            <View style={styles.inputBox}>
-              <Ionicons name="mail-outline" size={18} color={Colors.textMuted} style={styles.inputIcon} />
+            <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>{t('email')}</Text>
+            <View style={[styles.inputBox, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
+              <Ionicons name="mail-outline" size={18} color={colors.textMuted} style={styles.inputIcon} />
               <TextInput
-                style={styles.textInput}
-                placeholder="eposta@adresiniz.com"
-                placeholderTextColor={Colors.textMuted}
+                style={[styles.textInput, { color: colors.textPrimary }]}
+                placeholder="ornek@universite.edu.tr"
+                placeholderTextColor={colors.textMuted}
                 autoCapitalize="none"
                 keyboardType="email-address"
                 value={email}
@@ -111,15 +123,15 @@ export default function RegisterScreen() {
             </View>
           </View>
 
-          {/* Password */}
+          {/* Password input */}
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>{t('password')}</Text>
-            <View style={styles.inputBox}>
-              <Ionicons name="lock-closed-outline" size={18} color={Colors.textMuted} style={styles.inputIcon} />
+            <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>{t('password')}</Text>
+            <View style={[styles.inputBox, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
+              <Ionicons name="lock-closed-outline" size={18} color={colors.textMuted} style={styles.inputIcon} />
               <TextInput
-                style={styles.textInput}
+                style={[styles.textInput, { color: colors.textPrimary }]}
                 placeholder="En az 6 karakter"
-                placeholderTextColor={Colors.textMuted}
+                placeholderTextColor={colors.textMuted}
                 secureTextEntry
                 value={password}
                 onChangeText={setPassword}
@@ -127,15 +139,15 @@ export default function RegisterScreen() {
             </View>
           </View>
 
-          {/* Confirm Password */}
+          {/* Confirm Password input */}
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Şifre Tekrar</Text>
-            <View style={styles.inputBox}>
-              <Ionicons name="shield-checkmark-outline" size={18} color={Colors.textMuted} style={styles.inputIcon} />
+            <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>{t('confirm_password')}</Text>
+            <View style={[styles.inputBox, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
+              <Ionicons name="lock-closed-outline" size={18} color={colors.textMuted} style={styles.inputIcon} />
               <TextInput
-                style={styles.textInput}
+                style={[styles.textInput, { color: colors.textPrimary }]}
                 placeholder="Şifrenizi tekrar girin"
-                placeholderTextColor={Colors.textMuted}
+                placeholderTextColor={colors.textMuted}
                 secureTextEntry
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
@@ -143,42 +155,45 @@ export default function RegisterScreen() {
             </View>
           </View>
 
-          {/* Submit */}
+          {/* Submit Button */}
           <TouchableOpacity
             onPress={handleRegister}
             activeOpacity={0.8}
-            style={styles.submitBtn}
+            style={[styles.submitBtn, { backgroundColor: colors.primary }]}
             disabled={loading}
           >
-            <Text style={styles.submitBtnText}>{t('register_button')}</Text>
+            <Text style={[styles.submitBtnText, { color: colors.background }]}>{t('register_button')}</Text>
           </TouchableOpacity>
 
           {/* Divider */}
           <View style={styles.dividerRow}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>{t('or_continue_with')}</Text>
-            <View style={styles.dividerLine} />
+            <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
+            <Text style={[styles.dividerText, { color: colors.textMuted }]}>{t('or_continue_with')}</Text>
+            <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
           </View>
 
-          {/* Social */}
+          {/* Social Logins */}
           <View style={styles.socialButtonsRow}>
-            <TouchableOpacity onPress={handleGoogleSignup} style={styles.socialBtn}>
+            <TouchableOpacity
+              onPress={handleGoogleSignup}
+              style={[styles.socialBtn, { backgroundColor: colors.cardBgElevated, borderColor: colors.border }]}
+            >
               <Ionicons name="logo-google" size={18} color="#EA4335" />
-              <Text style={styles.socialBtnText}>Google</Text>
+              <Text style={[styles.socialBtnText, { color: colors.textPrimary }]}>Google</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={handleAppleSignup} style={styles.socialBtn}>
-              <Ionicons name="logo-apple" size={18} color="#FFFFFF" />
-              <Text style={styles.socialBtnText}>Apple</Text>
+            <TouchableOpacity
+              onPress={handleAppleSignup}
+              style={[styles.socialBtn, { backgroundColor: colors.cardBgElevated, borderColor: colors.border }]}
+            >
+              <Ionicons name="logo-apple" size={18} color={colors.textPrimary} />
+              <Text style={[styles.socialBtnText, { color: colors.textPrimary }]}>Apple</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Back to login */}
-          <TouchableOpacity
-            onPress={() => router.push('/(auth)/login')}
-            style={styles.switchAuthBtn}
-          >
-            <Text style={styles.switchAuthText}>{t('have_account')}</Text>
+          {/* Go to login */}
+          <TouchableOpacity onPress={() => router.push('/(auth)/login')} style={styles.switchAuthBtn}>
+            <Text style={[styles.switchAuthText, { color: colors.textSecondary }]}>{t('has_account')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -189,60 +204,61 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   container: {
     padding: 20,
+    paddingTop: 10,
     justifyContent: 'center',
     minHeight: '100%',
   },
   brandHeader: {
+    alignItems: 'center',
     marginBottom: 20,
   },
   backBtn: {
+    alignSelf: 'flex-start',
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: Colors.cardBgElevated,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: Colors.border,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   brandTitle: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '800',
-    color: Colors.textPrimary,
+    letterSpacing: 0.5,
   },
   brandSubtitle: {
     fontSize: 12,
-    color: Colors.textSecondary,
     marginTop: 4,
+    textAlign: 'center',
   },
   formCard: {
-    backgroundColor: Colors.cardBg,
     borderRadius: 20,
     padding: 20,
     borderWidth: 1,
-    borderColor: Colors.border,
+  },
+  formTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 16,
+    textAlign: 'center',
   },
   inputGroup: {
     marginBottom: 12,
   },
   inputLabel: {
     fontSize: 12,
-    color: Colors.textSecondary,
     marginBottom: 6,
     fontWeight: '600',
   },
   inputBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.inputBg,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: Colors.inputBorder,
     paddingHorizontal: 12,
     paddingVertical: 10,
   },
@@ -251,19 +267,16 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    color: Colors.textPrimary,
     fontSize: 14,
   },
   submitBtn: {
-    backgroundColor: Colors.primary,
     borderRadius: 12,
     paddingVertical: 13,
     alignItems: 'center',
     marginTop: 8,
-    marginBottom: 16,
+    marginBottom: 14,
   },
   submitBtnText: {
-    color: Colors.background,
     fontSize: 14,
     fontWeight: '800',
   },
@@ -275,17 +288,15 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: Colors.border,
   },
   dividerText: {
     fontSize: 11,
-    color: Colors.textMuted,
     marginHorizontal: 10,
   },
   socialButtonsRow: {
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 16,
+    marginBottom: 14,
   },
   socialBtn: {
     flex: 1,
@@ -293,14 +304,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: Colors.cardBgElevated,
     borderRadius: 12,
     paddingVertical: 11,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   socialBtnText: {
-    color: Colors.textPrimary,
     fontSize: 13,
     fontWeight: '600',
   },
@@ -308,7 +316,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   switchAuthText: {
-    color: Colors.textSecondary,
     fontSize: 12,
   },
 });

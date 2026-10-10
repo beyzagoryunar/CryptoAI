@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { SignalAction } from '../types/crypto';
-import { Colors } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 
 interface SignalBadgeProps {
@@ -11,42 +11,44 @@ interface SignalBadgeProps {
 }
 
 export const SignalBadge: React.FC<SignalBadgeProps> = ({ action, confidence, compact = false }) => {
+  const { colors } = useTheme();
+
   const getBadgeConfig = () => {
     switch (action) {
       case 'GÜÇLÜ AL':
         return {
-          bg: Colors.bullishMuted,
-          border: Colors.bullish,
-          color: Colors.bullish,
+          bg: colors.bullishMuted,
+          border: colors.bullish,
+          color: colors.bullish,
           icon: 'trending-up' as const,
         };
       case 'AL':
         return {
-          bg: Colors.bullishMuted,
+          bg: colors.bullishMuted,
           border: 'rgba(0, 230, 118, 0.4)',
-          color: Colors.bullish,
+          color: colors.bullish,
           icon: 'arrow-up' as const,
         };
       case 'SAT':
         return {
-          bg: Colors.bearishMuted,
+          bg: colors.bearishMuted,
           border: 'rgba(255, 82, 82, 0.4)',
-          color: Colors.bearish,
+          color: colors.bearish,
           icon: 'arrow-down' as const,
         };
       case 'GÜÇLÜ SAT':
         return {
-          bg: Colors.bearishMuted,
-          border: Colors.bearish,
-          color: Colors.bearish,
+          bg: colors.bearishMuted,
+          border: colors.bearish,
+          color: colors.bearish,
           icon: 'trending-down' as const,
         };
       case 'NÖTR':
       default:
         return {
-          bg: Colors.neutralMuted,
+          bg: colors.neutralMuted,
           border: 'rgba(255, 160, 0, 0.4)',
-          color: Colors.neutral,
+          color: colors.neutral,
           icon: 'swap-horizontal' as const,
         };
     }
