@@ -15,14 +15,20 @@ import {
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 WebBrowser.maybeCompleteAuthSession();
+
+export const INACTIVITY_TIMEOUT_DAYS = 30;
+const INACTIVITY_TIMEOUT_MS = INACTIVITY_TIMEOUT_DAYS * 24 * 60 * 60 * 1000;
+const LAST_ACTIVE_KEY = '@cryptoai_last_active_at';
 
 interface AuthContextType {
   user: UserProfile | null;
   firebaseUser: FirebaseUser | null;
   isAuthenticated: boolean;
   loading: boolean;
+  inactivityTimeoutDays: number;
   loginWithEmail: (email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
   registerWithEmail: (name: string, email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
   loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
@@ -60,6 +66,7 @@ const AuthContext = createContext<AuthContextType>({
   firebaseUser: null,
   isAuthenticated: false,
   loading: true,
+  inactivityTimeoutDays: INACTIVITY_TIMEOUT_DAYS,
   loginWithEmail: async () => ({ success: false }),
   registerWithEmail: async () => ({ success: false }),
   loginWithGoogle: async () => ({ success: false }),
@@ -74,12 +81,49 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Listen to real Firebase auth state changes
+  const recordActivity = async () => {
+    try {
+      await AsyncStorage.setItem(LAST_ACTIVE_KEY, Date.now().toString());
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  const clearActivity = async () => {
+    try {
+      await AsyncStorage.removeItem(LAST_ACTIVE_KEY);
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  // Listen to real Firebase auth state changes with 30-day inactivity session protection
   useEffect(() => {
     try {
       const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
         setFirebaseUser(fbUser);
         if (fbUser) {
+          // Check 30-day inactivity timeout
+          try {
+            const lastActiveStr = await AsyncStorage.getItem(LAST_ACTIVE_KEY);
+            if (lastActiveStr) {
+              const lastActive = parseInt(lastActiveStr, 10);
+              const elapsed = Date.now() - lastActive;
+              if (elapsed > INACTIVITY_TIMEOUT_MS) {
+                console.log('Session expired: 30 days of inactivity exceeded.');
+                await signOut(auth);
+                await clearActivity();
+                setUser(null);
+                setFirebaseUser(null);
+                setLoading(false);
+                return;
+              }
+            }
+            await recordActivity();
+          } catch (storageErr) {
+            console.log('Inactivity check error:', storageErr);
+          }
+
           try {
             const token = await fbUser.getIdToken();
             const userDoc = await getDoc(doc(db, 'users', fbUser.uid));
@@ -148,6 +192,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isBiometricEnabled: false,
       });
 
+      await recordActivity();
       return { success: true };
     } catch (err: any) {
       console.log('Firebase Register Error:', err?.code, err?.message);
@@ -182,6 +227,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isBiometricEnabled: true,
       });
 
+      await recordActivity();
       return { success: true };
     } catch (err: any) {
       console.log('Firebase Login Error:', err?.code, err?.message);
@@ -220,6 +266,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           isBiometricEnabled: true,
         });
 
+        await recordActivity();
         return { success: true };
       } else {
         // Mobile (Expo Go) Google Authentication
@@ -247,6 +294,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           isBiometricEnabled: true,
         });
 
+        await recordActivity();
         return { success: true };
       }
     } catch (err: any) {
@@ -265,6 +313,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       token: appleToken,
       isBiometricEnabled: true,
     });
+    await recordActivity();
     return true;
   };
 
@@ -277,6 +326,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       token: 'eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjYWRlbWljLWtleS0yMDI2In0.ey...academic_verified_jwt_token',
       isBiometricEnabled: true,
     });
+    recordActivity();
   };
 
   const logout = async () => {
@@ -285,6 +335,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (e) {
       // ignore
     }
+    await clearActivity();
     setUser(null);
   };
 
@@ -301,6 +352,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         firebaseUser,
         isAuthenticated: !!user,
         loading,
+        inactivityTimeoutDays: INACTIVITY_TIMEOUT_DAYS,
         loginWithEmail,
         registerWithEmail,
         loginWithGoogle,

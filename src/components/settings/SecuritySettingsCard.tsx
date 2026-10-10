@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { UserProfile } from '../../types/crypto';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 
 interface Props {
   user: UserProfile | null;
@@ -13,6 +14,7 @@ interface Props {
 export const SecuritySettingsCard: React.FC<Props> = ({ user, onToggleBiometrics }) => {
   const { t } = useLanguage();
   const { colors } = useTheme();
+  const { inactivityTimeoutDays } = useAuth();
 
   return (
     <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
@@ -21,6 +23,7 @@ export const SecuritySettingsCard: React.FC<Props> = ({ user, onToggleBiometrics
         <Text style={[styles.title, { color: colors.textPrimary }]}>{t('security')}</Text>
       </View>
 
+      {/* Biometric login */}
       <View style={[styles.settingRow, { borderBottomColor: colors.border }]}>
         <View>
           <Text style={[styles.rowLabel, { color: colors.textPrimary }]}>{t('biometric_login')}</Text>
@@ -36,7 +39,8 @@ export const SecuritySettingsCard: React.FC<Props> = ({ user, onToggleBiometrics
         />
       </View>
 
-      <View style={[styles.settingRow, { borderBottomWidth: 0 }]}>
+      {/* JWT Token Status */}
+      <View style={[styles.settingRow, { borderBottomColor: colors.border }]}>
         <View style={{ flex: 1, paddingRight: 8 }}>
           <Text style={[styles.rowLabel, { color: colors.textPrimary }]}>{t('jwt_status')}</Text>
           <Text style={[styles.tokenCode, { color: colors.primary }]} numberOfLines={1}>
@@ -46,6 +50,20 @@ export const SecuritySettingsCard: React.FC<Props> = ({ user, onToggleBiometrics
         <View style={[styles.verifiedBadge, { backgroundColor: colors.bullishMuted }]}>
           <Ionicons name="checkmark-done" size={12} color={colors.bullish} />
           <Text style={[styles.verifiedText, { color: colors.bullish }]}>Aktif</Text>
+        </View>
+      </View>
+
+      {/* Inactivity Session Timeout (OWASP Compliance) */}
+      <View style={[styles.settingRow, { borderBottomWidth: 0 }]}>
+        <View style={{ flex: 1, paddingRight: 8 }}>
+          <Text style={[styles.rowLabel, { color: colors.textPrimary }]}>Oturum Zaman Aşımı</Text>
+          <Text style={[styles.rowDesc, { color: colors.textMuted }]}>
+            {inactivityTimeoutDays} gün işlem yapılmadığında güvenli otomatik çıkış
+          </Text>
+        </View>
+        <View style={[styles.verifiedBadge, { backgroundColor: colors.primaryMuted }]}>
+          <Ionicons name="timer-outline" size={12} color={colors.primary} />
+          <Text style={[styles.verifiedText, { color: colors.primary }]}>{inactivityTimeoutDays} Gün</Text>
         </View>
       </View>
     </View>
