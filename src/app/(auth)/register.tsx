@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
+import { AuthSocialButtons } from '../../components/auth/AuthSocialButtons';
+import { authStyles as styles } from '../../styles/authStyles';
 
 export default function RegisterScreen() {
-  const { registerWithEmail, loginWithGoogle, loginWithApple } = useAuth();
+  const { registerWithEmail, loginWithGoogle } = useAuth();
   const { t } = useLanguage();
   const { colors } = useTheme();
 
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -27,8 +30,8 @@ export default function RegisterScreen() {
   };
 
   const handleRegister = async () => {
-    if (!name || !email || !password) {
-      showAlert('Eksik Bilgi', 'Lütfen tüm alanları doldurun.');
+    if (!firstName.trim() || !lastName.trim() || !email || !password) {
+      showAlert('Eksik Bilgi', 'Lütfen ad, soyad ve tüm alanları doldurun.');
       return;
     }
     if (password !== confirmPassword) {
@@ -40,7 +43,7 @@ export default function RegisterScreen() {
       return;
     }
     setLoading(true);
-    const res = await registerWithEmail(name, email, password);
+    const res = await registerWithEmail(firstName, lastName, email, password);
     setLoading(false);
     if (res.success) {
       showAlert('Kayıt Başarılı', 'Firebase hesabınız oluşturuldu. $10.000 sanal bakiyeniz cüzdanınıza tanımlandı.');
@@ -61,7 +64,7 @@ export default function RegisterScreen() {
     }
   };
 
-  const handleAppleSignup = async () => {
+  const handleAppleSignup = () => {
     showAlert(
       'Apple ile Kayıt',
       'Apple Kimliği doğrulaması gerçek iOS cihaz sertifikası gerektirir. Lütfen gerçek Firebase doğrulaması için E-Posta ve Şifrenizle Kayıt Olup giriş yapın.'
@@ -91,18 +94,33 @@ export default function RegisterScreen() {
         <View style={[styles.formCard, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
           <Text style={[styles.formTitle, { color: colors.textPrimary }]}>{t('register_title')}</Text>
 
-          {/* Name input */}
-          <View style={styles.inputGroup}>
-            <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>{t('name')}</Text>
-            <View style={[styles.inputBox, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
-              <Ionicons name="person-outline" size={18} color={colors.textMuted} style={styles.inputIcon} />
-              <TextInput
-                style={[styles.textInput, { color: colors.textPrimary }]}
-                placeholder="Adınız Soyadınız"
-                placeholderTextColor={colors.textMuted}
-                value={name}
-                onChangeText={setName}
-              />
+          {/* First Name & Last Name inputs */}
+          <View style={styles.nameRow}>
+            <View style={[styles.inputGroup, { flex: 1 }]}>
+              <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>Ad</Text>
+              <View style={[styles.inputBox, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
+                <Ionicons name="person-outline" size={16} color={colors.textMuted} style={styles.inputIcon} />
+                <TextInput
+                  style={[styles.textInput, { color: colors.textPrimary }]}
+                  placeholder="Adınız"
+                  placeholderTextColor={colors.textMuted}
+                  value={firstName}
+                  onChangeText={setFirstName}
+                />
+              </View>
+            </View>
+
+            <View style={[styles.inputGroup, { flex: 1 }]}>
+              <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>Soyad</Text>
+              <View style={[styles.inputBox, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
+                <TextInput
+                  style={[styles.textInput, { color: colors.textPrimary }]}
+                  placeholder="Soyadınız"
+                  placeholderTextColor={colors.textMuted}
+                  value={lastName}
+                  onChangeText={setLastName}
+                />
+              </View>
             </View>
           </View>
 
@@ -165,31 +183,8 @@ export default function RegisterScreen() {
             <Text style={[styles.submitBtnText, { color: colors.background }]}>{t('register_button')}</Text>
           </TouchableOpacity>
 
-          {/* Divider */}
-          <View style={styles.dividerRow}>
-            <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-            <Text style={[styles.dividerText, { color: colors.textMuted }]}>{t('or_continue_with')}</Text>
-            <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-          </View>
-
           {/* Social Logins */}
-          <View style={styles.socialButtonsRow}>
-            <TouchableOpacity
-              onPress={handleGoogleSignup}
-              style={[styles.socialBtn, { backgroundColor: colors.cardBgElevated, borderColor: colors.border }]}
-            >
-              <Ionicons name="logo-google" size={18} color="#EA4335" />
-              <Text style={[styles.socialBtnText, { color: colors.textPrimary }]}>Google</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={handleAppleSignup}
-              style={[styles.socialBtn, { backgroundColor: colors.cardBgElevated, borderColor: colors.border }]}
-            >
-              <Ionicons name="logo-apple" size={18} color={colors.textPrimary} />
-              <Text style={[styles.socialBtnText, { color: colors.textPrimary }]}>Apple</Text>
-            </TouchableOpacity>
-          </View>
+          <AuthSocialButtons onGooglePress={handleGoogleSignup} onApplePress={handleAppleSignup} />
 
           {/* Go to login */}
           <TouchableOpacity onPress={() => router.push('/(auth)/login')} style={styles.switchAuthBtn}>
@@ -200,122 +195,3 @@ export default function RegisterScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    padding: 20,
-    paddingTop: 10,
-    justifyContent: 'center',
-    minHeight: '100%',
-  },
-  brandHeader: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  backBtn: {
-    alignSelf: 'flex-start',
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    marginBottom: 10,
-  },
-  brandTitle: {
-    fontSize: 24,
-    fontWeight: '800',
-    letterSpacing: 0.5,
-  },
-  brandSubtitle: {
-    fontSize: 12,
-    marginTop: 4,
-    textAlign: 'center',
-  },
-  formCard: {
-    borderRadius: 20,
-    padding: 20,
-    borderWidth: 1,
-  },
-  formTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  inputGroup: {
-    marginBottom: 12,
-  },
-  inputLabel: {
-    fontSize: 12,
-    marginBottom: 6,
-    fontWeight: '600',
-  },
-  inputBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 12,
-    borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-  },
-  inputIcon: {
-    marginRight: 8,
-  },
-  textInput: {
-    flex: 1,
-    fontSize: 14,
-  },
-  submitBtn: {
-    borderRadius: 12,
-    paddingVertical: 13,
-    alignItems: 'center',
-    marginTop: 8,
-    marginBottom: 14,
-  },
-  submitBtnText: {
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 14,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-  },
-  dividerText: {
-    fontSize: 11,
-    marginHorizontal: 10,
-  },
-  socialButtonsRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 14,
-  },
-  socialBtn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    borderRadius: 12,
-    paddingVertical: 11,
-    borderWidth: 1,
-  },
-  socialBtnText: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  switchAuthBtn: {
-    alignItems: 'center',
-  },
-  switchAuthText: {
-    fontSize: 12,
-  },
-});

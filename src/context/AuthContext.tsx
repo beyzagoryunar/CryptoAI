@@ -10,11 +10,9 @@ import {
   User as FirebaseUser,
   GoogleAuthProvider,
   signInWithPopup,
-  signInWithCredential,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import * as WebBrowser from 'expo-web-browser';
-import * as AuthSession from 'expo-auth-session';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -30,7 +28,7 @@ interface AuthContextType {
   loading: boolean;
   inactivityTimeoutDays: number;
   loginWithEmail: (email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
-  registerWithEmail: (name: string, email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
+  registerWithEmail: (firstName: string, lastName: string, email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
   loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
   loginWithApple: () => Promise<boolean>;
   loginDemoUser: () => void;
@@ -84,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const recordActivity = async () => {
     try {
       await AsyncStorage.setItem(LAST_ACTIVE_KEY, Date.now().toString());
-    } catch (e) {
+    } catch {
       // ignore
     }
   };
@@ -92,15 +90,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const clearActivity = async () => {
     try {
       await AsyncStorage.removeItem(LAST_ACTIVE_KEY);
-    } catch (e) {
+    } catch {
       // ignore
     }
   };
 
   // Listen to real Firebase auth state changes with 30-day inactivity session protection
   useEffect(() => {
-    try {
-      const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      async (fbUser) => {
         setFirebaseUser(fbUser);
         if (fbUser) {
           // Check 30-day inactivity timeout
@@ -129,10 +128,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const userDoc = await getDoc(doc(db, 'users', fbUser.uid));
             const userData = userDoc.exists() ? userDoc.data() : null;
 
+            const fullName = userData?.name || fbUser.displayName || fbUser.email?.split('@')[0] || 'Kullanıcı';
+            const firstName = userData?.firstName || fullName.split(' ')[0] || '';
+            const lastName = userData?.lastName || fullName.split(' ').slice(1).join(' ') || '';
+
             setUser({
               id: fbUser.uid,
-              name: userData?.name || fbUser.displayName || fbUser.email?.split('@')[0] || 'Kullanıcı',
+              name: fullName,
+              firstName,
+              lastName,
               email: fbUser.email || '',
+              balance: userData?.balance ?? 10000.0,
               authProvider: (userData?.authProvider as any) || (fbUser.providerData[0]?.providerId === 'google.com' ? 'google' : 'email'),
               token: token,
               isBiometricEnabled: userData?.isBiometricEnabled ?? true,
@@ -140,10 +146,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           } catch (e) {
             console.log('Firebase user doc read note:', e);
             const token = await fbUser.getIdToken().catch(() => 'demo-token');
+            const fullName = fbUser.displayName || fbUser.email?.split('@')[0] || 'Kullanıcı';
             setUser({
               id: fbUser.uid,
-              name: fbUser.displayName || fbUser.email?.split('@')[0] || 'Kullanıcı',
+              name: fullName,
+              firstName: fullName.split(' ')[0],
+              lastName: fullName.split(' ').slice(1).join(' '),
               email: fbUser.email || '',
+              balance: 10000.0,
               authProvider: fbUser.providerData[0]?.providerId === 'google.com' ? 'google' : 'email',
               token,
               isBiometricEnabled: true,
@@ -153,26 +163,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser(null);
         }
         setLoading(false);
-      });
+      },
+      () => {
+        setLoading(false);
+      }
+    );
 
-      return () => unsubscribe();
-    } catch (err) {
-      setLoading(false);
-    }
+    return () => unsubscribe();
   }, []);
 
   const registerWithEmail = async (
-    name: string,
+    firstName: string,
+    lastName: string,
     email: string,
     pass: string
   ): Promise<{ success: boolean; error?: string }> => {
     try {
+      const cleanFirst = firstName.trim();
+      const cleanLast = lastName.trim();
+      const fullName = `${cleanFirst} ${cleanLast}`.trim();
+
       const cred = await createUserWithEmailAndPassword(auth, email.trim(), pass);
       const token = await cred.user.getIdToken();
 
       try {
         await setDoc(doc(db, 'users', cred.user.uid), {
-          name,
+          firstName: cleanFirst,
+          lastName: cleanLast,
+          name: fullName,
           email: email.trim(),
           balance: 10000.0,
           authProvider: 'email',
@@ -185,8 +203,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       setUser({
         id: cred.user.uid,
-        name,
+        name: fullName,
+        firstName: cleanFirst,
+        lastName: cleanLast,
         email: email.trim(),
+        balance: 10000.0,
         authProvider: 'email',
         token,
         isBiometricEnabled: false,
@@ -209,10 +230,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const token = await cred.user.getIdToken();
 
       let userName = cred.user.displayName || email.split('@')[0];
+      let firstName = '';
+      let lastName = '';
+      let balance = 10000.0;
       try {
         const userDoc = await getDoc(doc(db, 'users', cred.user.uid));
         if (userDoc.exists()) {
-          userName = userDoc.data().name || userName;
+          const data = userDoc.data();
+          userName = data.name || userName;
+          firstName = data.firstName || '';
+          lastName = data.lastName || '';
+          balance = data.balance ?? balance;
         }
       } catch (dbErr) {
         console.log('Firestore read info:', dbErr);
@@ -221,7 +249,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser({
         id: cred.user.uid,
         name: userName,
+        firstName: firstName || userName.split(' ')[0],
+        lastName: lastName || userName.split(' ').slice(1).join(' '),
         email: email.trim(),
+        balance,
         authProvider: 'email',
         token,
         isBiometricEnabled: true,
@@ -244,9 +275,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const cred = await signInWithPopup(auth, provider);
         const token = await cred.user.getIdToken();
 
+        const displayName = cred.user.displayName || 'Google Kullanıcısı';
+        const nameParts = displayName.trim().split(' ');
+        const gFirstName = nameParts[0] || 'Google';
+        const gLastName = nameParts.slice(1).join(' ') || 'Kullanıcısı';
+
         try {
           await setDoc(doc(db, 'users', cred.user.uid), {
-            name: cred.user.displayName || 'Google Kullanıcısı',
+            name: displayName,
+            firstName: gFirstName,
+            lastName: gLastName,
             email: cred.user.email,
             balance: 10000.0,
             authProvider: 'google',
@@ -259,8 +297,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         setUser({
           id: cred.user.uid,
-          name: cred.user.displayName || 'Google Kullanıcısı',
+          name: displayName,
+          firstName: gFirstName,
+          lastName: gLastName,
           email: cred.user.email || '',
+          balance: 10000.0,
           authProvider: 'google',
           token,
           isBiometricEnabled: true,
@@ -275,6 +316,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           await setDoc(doc(db, 'users', mobileUid), {
             name: 'Beyza Göryunar',
+            firstName: 'Beyza',
+            lastName: 'Göryunar',
             email: 'bgoryunar@gmail.com',
             balance: 10000.0,
             authProvider: 'google',
@@ -288,7 +331,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser({
           id: mobileUid,
           name: 'Beyza Göryunar',
+          firstName: 'Beyza',
+          lastName: 'Göryunar',
           email: 'bgoryunar@gmail.com',
+          balance: 10000.0,
           authProvider: 'google',
           token: `google_oauth2_verified_token_${Date.now()}`,
           isBiometricEnabled: true,
@@ -308,7 +354,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser({
       id: 'apple_id_81239',
       name: 'Apple ID Kullanıcısı',
+      firstName: 'Apple',
+      lastName: 'Kullanıcısı',
       email: 'user@privaterelay.appleid.com',
+      balance: 10000.0,
       authProvider: 'apple',
       token: appleToken,
       isBiometricEnabled: true,
@@ -320,8 +369,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginDemoUser = () => {
     setUser({
       id: 'user_academic_evaluator',
-      name: 'Bitirme Projesi Değerlendirme',
+      name: 'Beyza Göryunar (Demo)',
+      firstName: 'Beyza',
+      lastName: 'Göryunar',
       email: 'akademik@cryptoai.edu.tr',
+      balance: 10000.0,
       authProvider: 'google',
       token: 'eyJhbGciOiJSUzI1NiIsImtpZCI6ImFjYWRlbWljLWtleS0yMDI2In0.ey...academic_verified_jwt_token',
       isBiometricEnabled: true,
@@ -332,7 +384,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       await signOut(auth);
-    } catch (e) {
+    } catch {
       // ignore
     }
     await clearActivity();

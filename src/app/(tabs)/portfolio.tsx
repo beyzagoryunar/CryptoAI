@@ -103,7 +103,7 @@ export default function PortfolioScreen() {
               <Ionicons name="folder-open-outline" size={40} color={colors.textMuted} />
               <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>{t('no_positions')}</Text>
               <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
-                Piyasa Radarı'ndan coin seçerek veya Otopilot'u açarak işlem başlatabilirsiniz.
+                {"Piyasa Radarı'ndan coin seçerek veya Otopilot'u açarak işlem başlatabilirsiniz."}
               </Text>
             </View>
           ) : (

@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
+import { AuthSocialButtons } from '../../components/auth/AuthSocialButtons';
+import { authStyles as styles } from '../../styles/authStyles';
 
 export default function LoginScreen() {
-  const { loginWithEmail, loginWithGoogle, loginWithApple, loginDemoUser } = useAuth();
+  const { loginWithEmail, loginWithGoogle, loginDemoUser } = useAuth();
   const { t } = useLanguage();
   const { colors } = useTheme();
 
@@ -51,7 +53,7 @@ export default function LoginScreen() {
     }
   };
 
-  const handleAppleLogin = async () => {
+  const handleAppleLogin = () => {
     showAlert(
       'Apple ile Giriş',
       'Apple Kimliği doğrulaması gerçek iOS cihaz sertifikası gerektirir. Lütfen gerçek Firebase doğrulaması için E-Posta ve Şifrenizle Kayıt Olup giriş yapın.'
@@ -131,196 +133,25 @@ export default function LoginScreen() {
             <Text style={[styles.submitBtnText, { color: colors.background }]}>{t('login_button')}</Text>
           </TouchableOpacity>
 
-          {/* Divider */}
-          <View style={styles.dividerRow}>
-            <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-            <Text style={[styles.dividerText, { color: colors.textMuted }]}>{t('or_continue_with')}</Text>
-            <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-          </View>
-
-          {/* Social Logins */}
-          <View style={styles.socialButtonsRow}>
-            <TouchableOpacity
-              onPress={handleGoogleLogin}
-              style={[styles.socialBtn, { backgroundColor: colors.cardBgElevated, borderColor: colors.border }]}
-            >
-              <Ionicons name="logo-google" size={18} color="#EA4335" />
-              <Text style={[styles.socialBtnText, { color: colors.textPrimary }]}>Google</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={handleAppleLogin}
-              style={[styles.socialBtn, { backgroundColor: colors.cardBgElevated, borderColor: colors.border }]}
-            >
-              <Ionicons name="logo-apple" size={18} color={colors.textPrimary} />
-              <Text style={[styles.socialBtnText, { color: colors.textPrimary }]}>Apple</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Quick Demo Access */}
+          {/* Demo Login Button */}
           <TouchableOpacity
             onPress={handleDemoLogin}
-            style={[styles.demoBtn, { backgroundColor: colors.primaryMuted, borderColor: colors.primary }]}
+            activeOpacity={0.7}
+            style={[styles.demoBtn, { borderColor: colors.primary, backgroundColor: colors.cardBgElevated }]}
           >
             <Ionicons name="flash-outline" size={16} color={colors.primary} />
-            <Text style={[styles.demoBtnText, { color: colors.primary }]}>{t('demo_login')}</Text>
+            <Text style={[styles.demoBtnText, { color: colors.primary }]}>{t('demo_login_button')}</Text>
           </TouchableOpacity>
+
+          {/* Social Logins */}
+          <AuthSocialButtons onGooglePress={handleGoogleLogin} onApplePress={handleAppleLogin} />
 
           {/* Go to register */}
           <TouchableOpacity onPress={() => router.push('/(auth)/register')} style={styles.switchAuthBtn}>
             <Text style={[styles.switchAuthText, { color: colors.textSecondary }]}>{t('no_account')}</Text>
           </TouchableOpacity>
         </View>
-
-        {/* Security badge footer */}
-        <View style={styles.securityFooter}>
-          <Ionicons name="shield-checkmark" size={14} color={colors.bullish} />
-          <Text style={[styles.securityText, { color: colors.textMuted }]}>
-            JWT Token Tabanlı Güvenli Oturum & Şifreli Veri İletimi
-          </Text>
-        </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    padding: 20,
-    justifyContent: 'center',
-    minHeight: '100%',
-  },
-  brandHeader: {
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  logoBadge: {
-    width: 64,
-    height: 64,
-    borderRadius: 20,
-    borderWidth: 1.5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  brandTitle: {
-    fontSize: 26,
-    fontWeight: '800',
-    letterSpacing: 0.5,
-  },
-  brandSubtitle: {
-    fontSize: 12,
-    marginTop: 4,
-    textAlign: 'center',
-  },
-  formCard: {
-    borderRadius: 20,
-    padding: 20,
-    borderWidth: 1,
-  },
-  formTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 18,
-    textAlign: 'center',
-  },
-  inputGroup: {
-    marginBottom: 14,
-  },
-  inputLabel: {
-    fontSize: 12,
-    marginBottom: 6,
-    fontWeight: '600',
-  },
-  inputBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 12,
-    borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 11,
-  },
-  inputIcon: {
-    marginRight: 8,
-  },
-  textInput: {
-    flex: 1,
-    fontSize: 14,
-  },
-  submitBtn: {
-    borderRadius: 12,
-    paddingVertical: 13,
-    alignItems: 'center',
-    marginTop: 8,
-    marginBottom: 16,
-  },
-  submitBtnText: {
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-  },
-  dividerText: {
-    fontSize: 11,
-    marginHorizontal: 10,
-  },
-  socialButtonsRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 14,
-  },
-  socialBtn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    borderRadius: 12,
-    paddingVertical: 11,
-    borderWidth: 1,
-  },
-  socialBtnText: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  demoBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    borderRadius: 12,
-    paddingVertical: 11,
-    borderWidth: 1,
-    marginBottom: 16,
-  },
-  demoBtnText: {
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  switchAuthBtn: {
-    alignItems: 'center',
-  },
-  switchAuthText: {
-    fontSize: 12,
-  },
-  securityFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    marginTop: 20,
-  },
-  securityText: {
-    fontSize: 11,
-  },
-});

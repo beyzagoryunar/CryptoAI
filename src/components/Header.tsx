@@ -19,6 +19,14 @@ export const Header: React.FC = () => {
     router.push('/(tabs)/settings');
   };
 
+  const getInitials = () => {
+    if (!user) return 'AI';
+    if (user.firstName && user.lastName) return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+    const parts = user.name.trim().split(' ');
+    if (parts.length >= 2) return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+    return user.name.slice(0, 2).toUpperCase();
+  };
+
   return (
     <View style={[styles.header, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
       {/* Brand & Status */}
@@ -65,7 +73,7 @@ export const Header: React.FC = () => {
           style={[styles.avatarBtn, { backgroundColor: colors.primaryMuted, borderColor: colors.primary }]}
         >
           <Text style={[styles.avatarText, { color: colors.primary }]}>
-            {user ? user.name.slice(0, 2).toUpperCase() : 'AI'}
+            {getInitials()}
           </Text>
         </TouchableOpacity>
       </View>

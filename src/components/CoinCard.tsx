@@ -149,3 +149,5 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 });
+
+CoinCard.displayName = 'CoinCard';

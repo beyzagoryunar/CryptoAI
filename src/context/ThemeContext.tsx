@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { useColorScheme } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DarkThemeColors, LightThemeColors, ThemeColors } from '../constants/theme';
@@ -26,7 +26,6 @@ const ThemeContext = createContext<ThemeContextType>({
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const systemColorScheme = useColorScheme();
   const [themeMode, setThemeModeState] = useState<ThemeMode>('dark');
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const loadStoredTheme = async () => {
@@ -37,21 +36,19 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
       } catch (e) {
         console.log('Error loading stored theme:', e);
-      } finally {
-        setLoaded(true);
       }
     };
     loadStoredTheme();
   }, []);
 
-  const setThemeMode = async (mode: ThemeMode) => {
+  const setThemeMode = useCallback(async (mode: ThemeMode) => {
     setThemeModeState(mode);
     try {
       await AsyncStorage.setItem(THEME_STORAGE_KEY, mode);
     } catch (e) {
       console.log('Error saving theme:', e);
     }
-  };
+  }, []);
 
   const isDark = useMemo(() => {
     if (themeMode === 'system') {
@@ -64,10 +61,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return isDark ? DarkThemeColors : LightThemeColors;
   }, [isDark]);
 
-  const toggleTheme = async () => {
+  const toggleTheme = useCallback(async () => {
     const nextMode: ThemeMode = isDark ? 'light' : 'dark';
     await setThemeMode(nextMode);
-  };
+  }, [isDark, setThemeMode]);
 
   const contextValue = useMemo(() => ({
     themeMode,
@@ -75,7 +72,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     colors,
     setThemeMode,
     toggleTheme,
-  }), [themeMode, isDark, colors]);
+  }), [themeMode, isDark, colors, setThemeMode, toggleTheme]);
 
   return (
     <ThemeContext.Provider value={contextValue}>

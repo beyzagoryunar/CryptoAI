@@ -68,8 +68,11 @@ export interface TradeHistoryItem {
 export interface UserProfile {
   id: string;
   name: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
-  authProvider: 'email' | 'google' | 'apple';
+  balance?: number;
+  authProvider: 'email' | 'google' | 'apple' | 'demo';
   token: string;
   isBiometricEnabled: boolean;
 }
@@ -88,4 +91,17 @@ export interface AutopilotLog {
   time: string;
   message: string;
   type: 'info' | 'trade' | 'profit' | 'loss';
+}
+
+export interface PortfolioContextType {
+  coins: CryptoAsset[];
+  cashBalance: number;
+  totalBalance: number;
+  totalPnL: number;
+  totalPnLPercent: number;
+  positions: Position[];
+  tradeHistory: TradeHistoryItem[];
+  openPosition: (symbol: string, side: 'BUY' | 'SELL', amountUsd: number, isAutopilot?: boolean) => boolean;
+  closePosition: (positionId: string, reason?: TradeHistoryItem['closedReason']) => void;
+  resetPortfolio: () => void;
 }
