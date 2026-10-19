@@ -1,9 +1,31 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import fs from 'fs';
+
+// React Native .web.* uzantılarını öncelikli çözen eklenti
+const reactNativeWebResolver = () => ({
+  name: 'react-native-web-resolver',
+  enforce: 'pre' as const,
+  resolveId(source: string, importer: string | undefined) {
+    if (!importer) return null;
+    if (!source.startsWith('.') && !source.startsWith('/') && !source.includes('/')) return null;
+
+    const dir = path.dirname(importer);
+    const candidate = path.resolve(dir, source);
+
+    const webExtensions = ['.web.tsx', '.web.ts', '.web.jsx', '.web.js'];
+    for (const ext of webExtensions) {
+      if (fs.existsSync(candidate + ext)) {
+        return candidate + ext;
+      }
+    }
+    return null;
+  },
+});
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [reactNativeWebResolver(), react()],
   resolve: {
     alias: [
       {
