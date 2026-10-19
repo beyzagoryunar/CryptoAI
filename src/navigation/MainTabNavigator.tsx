@@ -1,0 +1,100 @@
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Wallet, CircleDot, Bot, User } from 'lucide-react-native';
+import { MainTabParamList } from './navigation.types';
+import { PortfolioScreen } from '../features/portfolio/screens/PortfolioScreen';
+import { MarketScreen } from '../features/market/screens/MarketScreen';
+import { AutopilotScreen } from '../features/autopilot/screens/AutopilotScreen';
+import { ProfileScreen } from '../features/profile/screens/ProfileScreen';
+import { colors, typography } from '../shared/theme';
+
+const Tab = createBottomTabNavigator<MainTabParamList>();
+
+export const MainTabNavigator: React.FC = () => {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: styles.tabBar,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: '#526075',
+        tabBarLabelStyle: styles.tabLabel,
+      }}
+    >
+      <Tab.Screen
+        name="Portfolio"
+        component={PortfolioScreen}
+        options={{
+          tabBarLabel: 'Cüzdanım',
+          tabBarIcon: ({ color, focused }) => (
+            <View style={focused ? styles.activeIconWrap : undefined}>
+              <Wallet size={22} color={color} />
+            </View>
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Market"
+        component={MarketScreen}
+        options={{
+          tabBarLabel: 'Piyasa',
+          tabBarIcon: ({ color, focused }) => (
+            <View style={focused ? styles.activeIconWrap : undefined}>
+              <CircleDot size={22} color={color} />
+            </View>
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Autopilot"
+        component={AutopilotScreen}
+        options={{
+          tabBarLabel: 'Otopilot',
+          tabBarIcon: ({ color, focused }) => (
+            <View style={focused ? styles.activeIconWrap : undefined}>
+              <Bot size={22} color={color} />
+            </View>
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarLabel: 'Profil',
+          tabBarIcon: ({ color, focused }) => (
+            <View style={focused ? styles.activeIconWrap : undefined}>
+              <User size={22} color={color} />
+            </View>
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+};
+
+const styles = StyleSheet.create({
+  tabBar: {
+    backgroundColor: '#070B11',
+    borderTopWidth: 1,
+    borderTopColor: '#141D2B',
+    height: 64,
+    paddingBottom: 8,
+    paddingTop: 8,
+  },
+  tabLabel: {
+    ...typography.captionBold,
+    fontSize: 11,
+    marginTop: 2,
+  },
+  activeIconWrap: {
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+  },
+});
