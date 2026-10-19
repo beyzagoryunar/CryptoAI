@@ -16,7 +16,7 @@ export const unstable_createElement = function (component, props, ...children) {
 };
 
 // Mock React Native Fabric / TurboModule exports needed for web
-export const codegenNativeComponent = (name) => name;
+export const codegenNativeComponent = () => RNWeb.View;
 export const codegenNativeCommands = () => ({});
 export const TurboModuleRegistry = {
   get: () => null,
