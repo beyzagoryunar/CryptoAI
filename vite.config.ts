@@ -5,12 +5,32 @@ import path from 'path';
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: {
-      'react-native': 'react-native-web',
-      '@react-native/assets-registry/registry': path.resolve(__dirname, './src/shims/assetsRegistry.js'),
-      '@react-native/assets-registry': path.resolve(__dirname, './src/shims/assetsRegistry.js'),
-      '@': path.resolve(__dirname, './src'),
-    },
+    alias: [
+      {
+        find: /^react-native\/Libraries\/Utilities\/codegenNativeComponent/,
+        replacement: path.resolve(__dirname, './src/shims/codegenNativeComponent.js'),
+      },
+      {
+        find: /^react-native\/Libraries\/ReactNative\/AppContainer/,
+        replacement: path.resolve(__dirname, './src/shims/AppContainer.js'),
+      },
+      {
+        find: /^react-native$/,
+        replacement: path.resolve(__dirname, './src/shims/reactNativeWeb.js'),
+      },
+      {
+        find: '@react-native/assets-registry/registry',
+        replacement: path.resolve(__dirname, './src/shims/assetsRegistry.js'),
+      },
+      {
+        find: '@react-native/assets-registry',
+        replacement: path.resolve(__dirname, './src/shims/assetsRegistry.js'),
+      },
+      {
+        find: '@',
+        replacement: path.resolve(__dirname, './src'),
+      },
+    ],
     extensions: [
       '.web.tsx',
       '.web.ts',
