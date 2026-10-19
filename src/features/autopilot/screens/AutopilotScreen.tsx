@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Plus, ChevronRight } from 'lucide-react-native';
 import { colors, typography, spacing, borderRadius } from '../../../shared/theme';
-import { Card, Button } from '../../../shared/components';
+import { Card } from '../../../shared/components';
 import { useApp } from '../../../context/AppContext';
 import { RootStackParamList } from '../../../navigation/navigation.types';
 import { AutopilotConfigCard } from '../components/AutopilotConfigCard';
@@ -43,43 +43,51 @@ export const AutopilotScreen: React.FC = () => {
                   !autopilot.isRunning && styles.pulseDotInactive,
                 ]}
               />
-              <Text style={styles.statusText}>
+              <Text style={[styles.statusText, { color: colors.textPrimary }]}>
                 {autopilot.isRunning ? 'Otopilot Çalışıyor' : 'Otopilot Durduruldu'}
               </Text>
             </View>
 
             <Pressable
-              style={styles.stopButton}
+              style={[
+                styles.stopButton,
+                {
+                  backgroundColor: isDark ? '#0F1A28' : '#E0F2FE',
+                  borderColor: isDark ? 'rgba(0, 178, 254, 0.3)' : colors.primary,
+                },
+              ]}
               onPress={toggleAutopilot}
               hitSlop={8}
             >
-              <Text style={styles.stopButtonText}>
+              <Text style={[styles.stopButtonText, { color: colors.primary }]}>
                 {autopilot.isRunning ? 'DURDUR' : 'BAŞLAT'}
               </Text>
             </Pressable>
           </View>
 
-          <View style={styles.cardDivider} />
+          <View style={[styles.cardDivider, { backgroundColor: colors.border }]} />
 
-          <Text style={styles.engineLabel}>Aktif Karar Motoru:</Text>
-          <Text style={styles.engineName}>{autopilot.activeModelName}</Text>
+          <Text style={[styles.engineLabel, { color: colors.textSecondary }]}>Aktif Karar Motoru:</Text>
+          <Text style={[styles.engineName, { color: colors.success }]}>{autopilot.activeModelName}</Text>
         </Card>
 
         {/* 24S Performans İstatistikleri */}
-        <Text style={styles.sectionHeader}>OTOPİLOT PERFORMANSI (24S)</Text>
+        <Text style={[styles.sectionHeader, { color: colors.textMuted }]}>OTOPİLOT PERFORMANSI (24S)</Text>
         <View style={styles.metricsRow}>
           <Card style={styles.metricCard}>
-            <Text style={styles.metricLabel}>Gerçekleşen Kâr</Text>
+            <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>Gerçekleşen Kâr</Text>
             <Text style={[styles.metricValue, { color: colors.success }]}>
               +${autopilot.realizedProfit24h.toFixed(2)}
             </Text>
           </Card>
 
           <Card style={styles.metricCard}>
-            <Text style={styles.metricLabel}>Model Başarı Oranı</Text>
+            <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>Model Başarı Oranı</Text>
             <Text style={[styles.metricValue, { color: colors.primary }]}>
               %{autopilot.successRatePercent}{' '}
-              <Text style={styles.tradeCount}>({autopilot.totalTradesCount} İşlem)</Text>
+              <Text style={[styles.tradeCount, { color: colors.textMuted }]}>
+                ({autopilot.totalTradesCount} İşlem)
+              </Text>
             </Text>
           </Card>
         </View>
@@ -88,7 +96,7 @@ export const AutopilotScreen: React.FC = () => {
         <AutopilotConfigCard />
 
         {/* Son AI İşlemleri (LOG) */}
-        <Text style={styles.sectionHeader}>SON AI İŞLEMLERİ (LOG)</Text>
+        <Text style={[styles.sectionHeader, { color: colors.textMuted }]}>SON AI İŞLEMLERİ (LOG)</Text>
 
         {autopilot.logs.map((log) => {
           const isSell = log.type === 'SELL';
@@ -102,7 +110,7 @@ export const AutopilotScreen: React.FC = () => {
               />
               <View style={styles.logContent}>
                 <View style={styles.logTopRow}>
-                  <Text style={styles.logTitle}>{log.title}</Text>
+                  <Text style={[styles.logTitle, { color: colors.textPrimary }]}>{log.title}</Text>
                   <Text
                     style={[
                       styles.logAmount,
@@ -114,10 +122,10 @@ export const AutopilotScreen: React.FC = () => {
                 </View>
 
                 <View style={styles.logBottomRow}>
-                  <Text style={styles.logReason} numberOfLines={1}>
+                  <Text style={[styles.logReason, { color: colors.textSecondary }]} numberOfLines={1}>
                     {log.reason}
                   </Text>
-                  <Text style={styles.logTime}>{log.time}</Text>
+                  <Text style={[styles.logTime, { color: colors.textMuted }]}>{log.time}</Text>
                 </View>
               </View>
             </Card>
@@ -130,10 +138,12 @@ export const AutopilotScreen: React.FC = () => {
           onPress={() => navigation.navigate('NewAlarm', { symbol: 'ETH' })}
         >
           <View style={styles.addStrategyRow}>
-            <View style={styles.plusCircle}>
-              <Plus size={16} color={colors.textSecondary} />
+            <View style={[styles.plusCircle, { backgroundColor: isDark ? '#1E293B' : '#E2E8F0' }]}>
+              <Plus size={16} color={colors.primary} />
             </View>
-            <Text style={styles.addStrategyText}>Otopilot Stratejisi Ekle</Text>
+            <Text style={[styles.addStrategyText, { color: colors.textPrimary }]}>
+              Otopilot Stratejisi Ekle
+            </Text>
           </View>
           <ChevronRight size={18} color={colors.textSecondary} />
         </Card>
@@ -184,39 +194,31 @@ const styles = StyleSheet.create({
   },
   statusText: {
     ...typography.bodyBold,
-    color: colors.textPrimary,
     fontSize: 16,
   },
   stopButton: {
-    backgroundColor: '#0F1A28',
     paddingHorizontal: spacing.md,
     paddingVertical: 6,
     borderRadius: borderRadius.pill,
     borderWidth: 1,
-    borderColor: 'rgba(0, 178, 254, 0.3)',
   },
   stopButtonText: {
     ...typography.captionBold,
-    color: colors.primary,
   },
   cardDivider: {
     height: 1,
-    backgroundColor: '#1E293B',
     marginVertical: spacing.md,
   },
   engineLabel: {
     ...typography.caption,
-    color: colors.textSecondary,
     marginBottom: 4,
   },
   engineName: {
     ...typography.bodyBold,
-    color: colors.success,
     fontSize: 15,
   },
   sectionHeader: {
     ...typography.micro,
-    color: colors.textMuted,
     marginBottom: spacing.sm,
   },
   metricsRow: {
@@ -231,7 +233,6 @@ const styles = StyleSheet.create({
   },
   metricLabel: {
     ...typography.caption,
-    color: colors.textSecondary,
     marginBottom: 6,
   },
   metricValue: {
@@ -240,7 +241,6 @@ const styles = StyleSheet.create({
   },
   tradeCount: {
     ...typography.caption,
-    color: colors.textMuted,
   },
   logCard: {
     padding: 0,
@@ -263,7 +263,6 @@ const styles = StyleSheet.create({
   },
   logTitle: {
     ...typography.bodyBold,
-    color: colors.textPrimary,
   },
   logAmount: {
     ...typography.captionBold,
@@ -275,13 +274,11 @@ const styles = StyleSheet.create({
   },
   logReason: {
     ...typography.caption,
-    color: colors.textSecondary,
     flex: 1,
     marginRight: spacing.sm,
   },
   logTime: {
     ...typography.micro,
-    color: colors.textMuted,
   },
   addStrategyCard: {
     flexDirection: 'row',
@@ -299,12 +296,10 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#1E293B',
     alignItems: 'center',
     justifyContent: 'center',
   },
   addStrategyText: {
     ...typography.bodyBold,
-    color: colors.textPrimary,
   },
 });

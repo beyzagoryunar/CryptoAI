@@ -125,13 +125,15 @@ export const MarketScreen: React.FC = () => {
         <Text style={[styles.columnHeader, { flex: 2, color: colors.textMuted }]}>
           {activeTab === 'watchlist' ? 'TAKİP EDİLEN VARLIK' : 'VARLIK'}
         </Text>
-        <Text style={[styles.columnHeader, { flex: 1.4, textAlign: 'center', color: colors.textMuted }]}>
+        <Text style={[styles.columnHeader, { flex: 1.3, textAlign: 'center', color: colors.textMuted }]}>
           AI SİNYALİ
         </Text>
-        <Text style={[styles.columnHeader, { flex: 1.8, textAlign: 'right', color: colors.textMuted }]}>
+        <Text style={[styles.columnHeader, { flex: 1.6, textAlign: 'right', color: colors.textMuted }]}>
           FİYAT
         </Text>
-        <View style={{ width: 28 }} />
+        <Text style={[styles.columnHeader, { width: 72, textAlign: 'center', color: colors.textMuted }]}>
+          TAKİP
+        </Text>
       </View>
 
       {/* Coin Listesi */}

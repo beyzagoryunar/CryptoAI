@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { Bell, Star } from 'lucide-react-native';
+import { Bell, Star, Plus } from 'lucide-react-native';
 import { CoinMarketDto } from '../../../services/api/types';
-import { colors, typography, spacing, borderRadius } from '../../../shared/theme';
+import { typography, spacing, borderRadius } from '../../../shared/theme';
 import { Badge, BadgeVariant } from '../../../shared/components/Badge';
 import { useTheme } from '../../../context/ThemeContext';
 
@@ -17,9 +17,9 @@ export const CoinRowItem: React.FC<CoinRowItemProps> = ({
   coin,
   onPress,
   onToggleWatchlist,
-  showWatchlistAction = false,
+  showWatchlistAction = true,
 }) => {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const isPositive = coin.change24h >= 0;
 
   const getSignalVariant = (signal: string): BadgeVariant => {
@@ -32,6 +32,15 @@ export const CoinRowItem: React.FC<CoinRowItemProps> = ({
         return 'sell';
       default:
         return 'neutral';
+    }
+  };
+
+  const handleToggleWatchlist = (e: any) => {
+    if (e && e.stopPropagation) {
+      e.stopPropagation();
+    }
+    if (onToggleWatchlist) {
+      onToggleWatchlist(coin.symbol);
     }
   };
 
@@ -49,7 +58,7 @@ export const CoinRowItem: React.FC<CoinRowItemProps> = ({
         <View style={[styles.coinIcon, { backgroundColor: coin.color }]}>
           <Text style={styles.coinIconText}>{coin.iconLetter}</Text>
         </View>
-        <View>
+        <View style={styles.coinInfo}>
           <Text style={[styles.symbol, { color: colors.textPrimary }]}>{coin.symbol}</Text>
           <Text style={[styles.name, { color: colors.textSecondary }]}>{coin.name}</Text>
         </View>
@@ -68,7 +77,7 @@ export const CoinRowItem: React.FC<CoinRowItemProps> = ({
         <View style={styles.priceHeaderRow}>
           {coin.hasAlarm && (
             <View style={styles.alarmBadge}>
-              <Bell size={11} color={colors.primary} />
+              <Bell size={10} color={colors.primary} />
             </View>
           )}
           <Text style={[styles.price, { color: colors.textPrimary }]}>
@@ -88,21 +97,47 @@ export const CoinRowItem: React.FC<CoinRowItemProps> = ({
         </Text>
       </View>
 
-      {/* Takip Listesi Yıldız Aksiyonu */}
+      {/* Açık ve Net Takip Butonu */}
       {showWatchlistAction && (
         <Pressable
-          style={styles.starAction}
-          onPress={(e) => {
-            e.stopPropagation?.();
-            onToggleWatchlist?.(coin.symbol);
-          }}
-          hitSlop={12}
+          style={[
+            styles.watchlistPill,
+            coin.isWatchlisted
+              ? [
+                  styles.watchlistPillActive,
+                  {
+                    backgroundColor: isDark ? 'rgba(255, 214, 0, 0.15)' : '#FEF3C7',
+                    borderColor: '#F59E0B',
+                  },
+                ]
+              : [
+                  styles.watchlistPillInactive,
+                  {
+                    backgroundColor: isDark ? '#111722' : '#F1F5F9',
+                    borderColor: colors.border,
+                  },
+                ],
+          ]}
+          onPress={handleToggleWatchlist}
+          hitSlop={8}
         >
           <Star
-            size={18}
-            color={coin.isWatchlisted ? colors.warning : colors.textMuted}
-            fill={coin.isWatchlisted ? colors.warning : 'transparent'}
+            size={12}
+            color={coin.isWatchlisted ? '#D97706' : colors.textMuted}
+            fill={coin.isWatchlisted ? '#D97706' : 'transparent'}
           />
+          <Text
+            style={[
+              styles.watchlistPillText,
+              {
+                color: coin.isWatchlisted
+                  ? (isDark ? '#FCD34D' : '#92400E')
+                  : colors.textMuted,
+              },
+            ]}
+          >
+            {coin.isWatchlisted ? 'Takipte' : '+Takip'}
+          </Text>
         </Pressable>
       )}
     </Pressable>
@@ -115,10 +150,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#141C28',
   },
   pressed: {
-    opacity: 0.7,
+    opacity: 0.8,
   },
   assetCol: {
     flex: 2,
@@ -126,33 +160,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   coinIcon: {
-    width: 38,
-    height: 38,
+    width: 36,
+    height: 36,
     borderRadius: borderRadius.full,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: spacing.sm + 2,
+    marginRight: spacing.sm,
   },
   coinIconText: {
     color: '#FFFFFF',
     fontWeight: '800',
-    fontSize: 14,
+    fontSize: 13,
+  },
+  coinInfo: {
+    justifyContent: 'center',
   },
   symbol: {
     ...typography.bodyBold,
-    color: colors.textPrimary,
+    fontSize: 14,
   },
   name: {
     ...typography.caption,
-    color: colors.textSecondary,
+    fontSize: 11,
   },
   signalCol: {
-    flex: 1.4,
+    flex: 1.3,
     alignItems: 'center',
     justifyContent: 'center',
   },
   priceCol: {
-    flex: 1.8,
+    flex: 1.6,
     alignItems: 'flex-end',
   },
   priceHeaderRow: {
@@ -164,23 +201,34 @@ const styles = StyleSheet.create({
   },
   price: {
     ...typography.bodyBold,
-    color: colors.textPrimary,
-    fontSize: 15,
+    fontSize: 14,
   },
   change: {
     ...typography.captionBold,
+    fontSize: 11,
     marginTop: 2,
   },
   textPositive: {
-    color: colors.success,
+    color: '#00E676',
   },
   textNegative: {
-    color: colors.danger,
+    color: '#FF3B30',
   },
-  starAction: {
-    marginLeft: spacing.sm,
-    padding: 4,
+  watchlistPill: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: borderRadius.pill,
+    borderWidth: 1,
+    marginLeft: 8,
+  },
+  watchlistPillActive: {},
+  watchlistPillInactive: {},
+  watchlistPillText: {
+    ...typography.captionBold,
+    fontSize: 10,
+    fontWeight: '700',
   },
 });

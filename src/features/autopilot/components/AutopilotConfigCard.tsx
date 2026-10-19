@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Sliders, Shield, TrendingUp } from 'lucide-react-native';
-import { colors, typography, spacing, borderRadius } from '../../../shared/theme';
+import { typography, spacing, borderRadius } from '../../../shared/theme';
 import { Card } from '../../../shared/components/Card';
 import { useApp, RiskProfileType } from '../../../context/AppContext';
 import { useTheme } from '../../../context/ThemeContext';
@@ -15,27 +15,50 @@ export const AutopilotConfigCard: React.FC = () => {
   const takeProfitOptions = [10, 20, 30];
 
   return (
-    <Card style={[styles.card, { backgroundColor: isDark ? '#0E1624' : colors.card, borderColor: colors.border }]}>
+    <Card style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={styles.headerRow}>
         <View style={styles.titleGroup}>
           <Sliders size={18} color={colors.primary} />
-          <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>Otopilot Strateji Ayarları</Text>
+          <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+            Otopilot Strateji Ayarları
+          </Text>
         </View>
-        <Text style={styles.activeRiskBadge}>{autopilotSettings.riskProfile}</Text>
+        <View style={[styles.activeRiskBadge, { backgroundColor: isDark ? 'rgba(0, 178, 254, 0.15)' : '#E0F2FE' }]}>
+          <Text style={[styles.activeRiskBadgeText, { color: colors.primary }]}>
+            {autopilotSettings.riskProfile}
+          </Text>
+        </View>
       </View>
 
       {/* Risk Profili Seçimi */}
-      <Text style={styles.label}>Risk Profili</Text>
+      <Text style={[styles.label, { color: colors.textSecondary }]}>Risk Profili</Text>
       <View style={styles.chipRow}>
         {riskProfiles.map((profile) => {
           const isActive = autopilotSettings.riskProfile === profile;
           return (
             <Pressable
               key={profile}
-              style={[styles.chip, isActive && styles.chipActive]}
+              style={[
+                styles.chip,
+                {
+                  backgroundColor: isActive
+                    ? (isDark ? '#0F1E32' : '#E0F2FE')
+                    : (isDark ? '#111722' : '#F1F5F9'),
+                  borderColor: isActive ? colors.primary : colors.border,
+                },
+              ]}
               onPress={() => updateAutopilotSettings({ riskProfile: profile })}
             >
-              <Text style={[styles.chipText, isActive && styles.chipTextActive]}>
+              <Text
+                style={[
+                  styles.chipText,
+                  {
+                    color: isActive
+                      ? colors.primary
+                      : (isDark ? '#8E9BAE' : '#334155'),
+                  },
+                ]}
+              >
                 {profile}
               </Text>
             </Pressable>
@@ -47,9 +70,13 @@ export const AutopilotConfigCard: React.FC = () => {
       <View style={styles.labelRow}>
         <View style={styles.labelWithIcon}>
           <Shield size={14} color={colors.danger} />
-          <Text style={styles.label}>Otomatik Zarar-Kes (Stop-Loss)</Text>
+          <Text style={[styles.label, { color: colors.textSecondary, marginBottom: 0 }]}>
+            Otomatik Zarar-Kes (Stop-Loss)
+          </Text>
         </View>
-        <Text style={styles.valueHighlight}>-%{autopilotSettings.stopLossPercent}</Text>
+        <Text style={[styles.valueHighlight, { color: colors.danger }]}>
+          -%{autopilotSettings.stopLossPercent}
+        </Text>
       </View>
       <View style={styles.chipRow}>
         {stopLossOptions.map((pct) => {
@@ -57,10 +84,27 @@ export const AutopilotConfigCard: React.FC = () => {
           return (
             <Pressable
               key={pct}
-              style={[styles.chip, isActive && styles.chipStopActive]}
+              style={[
+                styles.chip,
+                {
+                  backgroundColor: isActive
+                    ? (isDark ? 'rgba(255, 59, 48, 0.2)' : '#FEE2E2')
+                    : (isDark ? '#111722' : '#F1F5F9'),
+                  borderColor: isActive ? colors.danger : colors.border,
+                },
+              ]}
               onPress={() => updateAutopilotSettings({ stopLossPercent: pct })}
             >
-              <Text style={[styles.chipText, isActive && styles.chipStopText]}>
+              <Text
+                style={[
+                  styles.chipText,
+                  {
+                    color: isActive
+                      ? colors.danger
+                      : (isDark ? '#8E9BAE' : '#334155'),
+                  },
+                ]}
+              >
                 -%{pct}
               </Text>
             </Pressable>
@@ -72,7 +116,9 @@ export const AutopilotConfigCard: React.FC = () => {
       <View style={styles.labelRow}>
         <View style={styles.labelWithIcon}>
           <TrendingUp size={14} color={colors.success} />
-          <Text style={styles.label}>Hedef Kâr Alma (Take-Profit)</Text>
+          <Text style={[styles.label, { color: colors.textSecondary, marginBottom: 0 }]}>
+            Hedef Kâr Alma (Take-Profit)
+          </Text>
         </View>
         <Text style={[styles.valueHighlight, { color: colors.success }]}>
           +%{autopilotSettings.takeProfitPercent}
@@ -84,10 +130,27 @@ export const AutopilotConfigCard: React.FC = () => {
           return (
             <Pressable
               key={pct}
-              style={[styles.chip, isActive && styles.chipProfitActive]}
+              style={[
+                styles.chip,
+                {
+                  backgroundColor: isActive
+                    ? (isDark ? 'rgba(0, 230, 118, 0.2)' : '#DCFCE7')
+                    : (isDark ? '#111722' : '#F1F5F9'),
+                  borderColor: isActive ? colors.success : colors.border,
+                },
+              ]}
               onPress={() => updateAutopilotSettings({ takeProfitPercent: pct })}
             >
-              <Text style={[styles.chipText, isActive && styles.chipProfitText]}>
+              <Text
+                style={[
+                  styles.chipText,
+                  {
+                    color: isActive
+                      ? colors.success
+                      : (isDark ? '#8E9BAE' : '#334155'),
+                  },
+                ]}
+              >
                 +%{pct}
               </Text>
             </Pressable>
@@ -102,8 +165,8 @@ const styles = StyleSheet.create({
   card: {
     padding: spacing.lg,
     marginBottom: spacing.xl,
-    backgroundColor: '#0E1624',
-    borderColor: '#1D2A3D',
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
   },
   headerRow: {
     flexDirection: 'row',
@@ -118,19 +181,20 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     ...typography.bodyBold,
-    color: colors.textPrimary,
+    fontSize: 15,
   },
   activeRiskBadge: {
-    ...typography.captionBold,
-    color: colors.primary,
-    backgroundColor: 'rgba(0, 178, 254, 0.12)',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
     borderRadius: borderRadius.sm,
+  },
+  activeRiskBadgeText: {
+    ...typography.captionBold,
+    fontSize: 12,
   },
   label: {
     ...typography.captionBold,
-    color: colors.textSecondary,
+    fontSize: 12,
     marginBottom: spacing.xs,
   },
   labelRow: {
@@ -143,11 +207,11 @@ const styles = StyleSheet.create({
   labelWithIcon: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
   },
   valueHighlight: {
     ...typography.captionBold,
-    color: colors.danger,
+    fontSize: 13,
   },
   chipRow: {
     flexDirection: 'row',
@@ -156,36 +220,14 @@ const styles = StyleSheet.create({
   },
   chip: {
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: 9,
     borderRadius: borderRadius.sm,
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
+    borderWidth: 1.5,
     alignItems: 'center',
-  },
-  chipActive: {
-    borderColor: colors.primary,
-    backgroundColor: '#0F1E32',
+    justifyContent: 'center',
   },
   chipText: {
     ...typography.captionBold,
-    color: colors.textMuted,
-  },
-  chipTextActive: {
-    color: colors.primary,
-  },
-  chipStopActive: {
-    borderColor: colors.danger,
-    backgroundColor: 'rgba(255, 59, 48, 0.15)',
-  },
-  chipStopText: {
-    color: colors.danger,
-  },
-  chipProfitActive: {
-    borderColor: colors.success,
-    backgroundColor: 'rgba(0, 230, 118, 0.15)',
-  },
-  chipProfitText: {
-    color: colors.success,
+    fontSize: 13,
   },
 });

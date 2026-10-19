@@ -29,6 +29,10 @@ export default defineConfig({
   resolve: {
     alias: [
       {
+        find: /^react-native-svg$/,
+        replacement: path.resolve(__dirname, './node_modules/react-native-svg/lib/module/ReactNativeSVG.web.js'),
+      },
+      {
         find: /react-native-svg\/lib\/module\/lib\/resolve/,
         replacement: path.resolve(__dirname, './src/shims/svgResolve.js'),
       },

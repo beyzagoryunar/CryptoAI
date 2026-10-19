@@ -7,8 +7,8 @@ import {
   ScrollView,
   TextInput,
 } from 'react-native';
-import { X, Star, Search, Check } from 'lucide-react-native';
-import { colors, typography, spacing, borderRadius } from '../../../shared/theme';
+import { X, Star, Search, Check, Plus } from 'lucide-react-native';
+import { typography, spacing, borderRadius } from '../../../shared/theme';
 import { useApp } from '../../../context/AppContext';
 import { useTheme } from '../../../context/ThemeContext';
 
@@ -37,11 +37,16 @@ export const AddWatchlistModal: React.FC<AddWatchlistModalProps> = ({
     <View style={styles.overlay}>
       <Pressable style={styles.backdrop} onPress={onClose} />
       <View style={[styles.sheet, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        {/* Başlık */}
+        {/* Başlık ve Kapat Butonu */}
         <View style={styles.header}>
-          <Text style={[styles.title, { color: colors.textPrimary }]}>Takip Listesini Düzenle</Text>
-          <Pressable onPress={onClose} style={styles.closeBtn} hitSlop={8}>
-            <X size={20} color={colors.textSecondary} />
+          <View>
+            <Text style={[styles.title, { color: colors.textPrimary }]}>Takip Listesini Düzenle</Text>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+              Listenize coin ekleyin veya çıkarın
+            </Text>
+          </View>
+          <Pressable onPress={onClose} style={[styles.closeBtn, { backgroundColor: isDark ? '#1C2738' : '#F1F5F9' }]} hitSlop={8}>
+            <X size={18} color={colors.textPrimary} />
           </Pressable>
         </View>
 
@@ -50,7 +55,7 @@ export const AddWatchlistModal: React.FC<AddWatchlistModalProps> = ({
           <Search size={16} color={colors.textMuted} style={styles.searchIcon} />
           <TextInput
             style={[styles.searchInput, { color: colors.textPrimary }]}
-            placeholder="Coin ara (BTC, SOL...)"
+            placeholder="Coin ara (BTC, SOL, AVAX...)"
             placeholderTextColor={colors.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -78,22 +83,46 @@ export const AddWatchlistModal: React.FC<AddWatchlistModalProps> = ({
 
               <View style={styles.rightCol}>
                 <Text style={[styles.price, { color: colors.textPrimary }]}>
-                  ${coin.priceUsd.toLocaleString('tr-TR')}
+                  ${coin.priceUsd < 1 ? coin.priceUsd.toFixed(2) : coin.priceUsd.toLocaleString('tr-TR')}
                 </Text>
+
                 <Pressable
                   style={[
-                    styles.starBtn,
-                    coin.isWatchlisted && styles.starBtnActive,
-                    { backgroundColor: coin.isWatchlisted ? 'rgba(255, 214, 0, 0.15)' : colors.inputBackground },
+                    styles.actionBtn,
+                    coin.isWatchlisted
+                      ? [
+                          styles.actionBtnActive,
+                          {
+                            backgroundColor: isDark ? 'rgba(255, 214, 0, 0.15)' : '#FEF3C7',
+                            borderColor: '#F59E0B',
+                          },
+                        ]
+                      : [
+                          styles.actionBtnAdd,
+                          {
+                            backgroundColor: isDark ? '#00B2FE' : '#0284C7',
+                            borderColor: isDark ? '#00B2FE' : '#0284C7',
+                          },
+                        ],
                   ]}
                   onPress={() => toggleWatchlist(coin.symbol)}
                   hitSlop={8}
                 >
-                  <Star
-                    size={18}
-                    color={coin.isWatchlisted ? colors.warning : colors.textMuted}
-                    fill={coin.isWatchlisted ? colors.warning : 'transparent'}
-                  />
+                  {coin.isWatchlisted ? (
+                    <>
+                      <Star size={13} color="#D97706" fill="#D97706" />
+                      <Text style={[styles.actionBtnTextActive, { color: isDark ? '#FCD34D' : '#92400E' }]}>
+                        Takipte
+                      </Text>
+                    </>
+                  ) : (
+                    <>
+                      <Plus size={13} color="#FFFFFF" />
+                      <Text style={styles.actionBtnTextAdd}>
+                        + Ekle
+                      </Text>
+                    </>
+                  )}
                 </Pressable>
               </View>
             </View>
@@ -126,18 +155,16 @@ const styles = StyleSheet.create({
   },
   sheet: {
     width: '100%',
-    maxWidth: 420,
-    maxHeight: 520,
-    backgroundColor: colors.card,
+    maxWidth: 440,
+    maxHeight: 560,
     borderRadius: borderRadius.xl,
     padding: spacing.xl,
     borderWidth: 1,
-    borderColor: colors.border,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.5,
     shadowRadius: 20,
-    elevation: 20,
+    elevation: 25,
   },
   header: {
     flexDirection: 'row',
@@ -147,16 +174,22 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typography.h3,
-    color: colors.textPrimary,
+    fontSize: 18,
+  },
+  subtitle: {
+    ...typography.caption,
+    marginTop: 2,
   },
   closeBtn: {
-    padding: 4,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   searchBox: {
     height: 44,
-    backgroundColor: colors.inputBackground,
     borderWidth: 1,
-    borderColor: colors.inputBorder,
     borderRadius: borderRadius.md,
     flexDirection: 'row',
     alignItems: 'center',
@@ -168,19 +201,17 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    color: colors.textPrimary,
     ...typography.bodyMedium,
   },
   coinList: {
-    maxHeight: 340,
+    maxHeight: 360,
   },
   coinRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: spacing.sm + 2,
+    paddingVertical: spacing.sm + 4,
     borderBottomWidth: 1,
-    borderBottomColor: '#161F2E',
   },
   leftCol: {
     flexDirection: 'row',
@@ -201,11 +232,11 @@ const styles = StyleSheet.create({
   },
   symbol: {
     ...typography.bodyBold,
-    color: colors.textPrimary,
+    fontSize: 14,
   },
   name: {
     ...typography.caption,
-    color: colors.textSecondary,
+    fontSize: 11,
   },
   rightCol: {
     flexDirection: 'row',
@@ -214,15 +245,28 @@ const styles = StyleSheet.create({
   },
   price: {
     ...typography.captionBold,
-    color: colors.textPrimary,
+    fontSize: 13,
   },
-  starBtn: {
-    padding: 8,
-    borderRadius: borderRadius.sm,
+  actionBtn: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: borderRadius.pill,
+    borderWidth: 1,
   },
-  starBtnActive: {
-    transform: [{ scale: 1.05 }],
+  actionBtnActive: {},
+  actionBtnAdd: {},
+  actionBtnTextActive: {
+    ...typography.captionBold,
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  actionBtnTextAdd: {
+    ...typography.captionBold,
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
 });
