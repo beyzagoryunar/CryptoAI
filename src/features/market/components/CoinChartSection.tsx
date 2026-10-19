@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import Svg, { Path, Rect, Line } from 'react-native-svg';
-import { colors, typography, spacing, borderRadius } from '../../../shared/theme';
+import { typography, spacing, borderRadius } from '../../../shared/theme';
 import { useTheme } from '../../../context/ThemeContext';
+import { CoinRsiPanel } from './CoinRsiPanel';
 
 interface CoinChartProps {
   currentPrice: string;
@@ -53,7 +54,10 @@ export const CoinChartSection: React.FC<CoinChartProps> = ({ currentPrice }) => 
         <Pressable
           style={[
             styles.rsiToggle,
-            { backgroundColor: showRsi ? (isDark ? 'rgba(0, 178, 254, 0.15)' : '#E0F2FE') : colors.card, borderColor: showRsi ? colors.primary : colors.border },
+            {
+              backgroundColor: showRsi ? (isDark ? 'rgba(0, 178, 254, 0.15)' : '#E0F2FE') : colors.card,
+              borderColor: showRsi ? colors.primary : colors.border,
+            },
           ]}
           onPress={() => setShowRsi(!showRsi)}
         >
@@ -65,7 +69,6 @@ export const CoinChartSection: React.FC<CoinChartProps> = ({ currentPrice }) => 
 
       {/* Ana Grafik Alanı */}
       <View style={styles.chartCanvas}>
-        {/* Canlı Fiyat Rozeti */}
         <View style={styles.floatingPriceBadge}>
           <Text style={styles.badgeText}>{currentPrice}</Text>
         </View>
@@ -81,7 +84,6 @@ export const CoinChartSection: React.FC<CoinChartProps> = ({ currentPrice }) => 
             />
           </Svg>
         ) : (
-          /* Mum Grafiği (Candlesticks) */
           <Svg width="100%" height="110" viewBox="0 0 350 110">
             {mockCandles.map((c, i) => {
               const x = 15 + i * 33;
@@ -91,9 +93,7 @@ export const CoinChartSection: React.FC<CoinChartProps> = ({ currentPrice }) => 
 
               return (
                 <React.Fragment key={i}>
-                  {/* Fitil (Wick) */}
                   <Line x1={x + 7} y1={c.h} x2={x + 7} y2={c.l} stroke={color} strokeWidth="1.5" />
-                  {/* Mum Gövdesi (Body) */}
                   <Rect x={x} y={top} width="14" height={height} rx="2" fill={color} />
                 </React.Fragment>
               );
@@ -103,24 +103,7 @@ export const CoinChartSection: React.FC<CoinChartProps> = ({ currentPrice }) => 
       </View>
 
       {/* RSI(14) Osilatör Paneli */}
-      {showRsi && (
-        <View style={[styles.rsiPanel, { backgroundColor: isDark ? '#0C131E' : '#F1F5F9', borderColor: colors.border }]}>
-          <View style={styles.rsiHeader}>
-            <Text style={[styles.rsiTitle, { color: colors.textSecondary }]}>RSI (14) Osilatörü</Text>
-            <Text style={[styles.rsiValue, { color: colors.primary }]}>62.40 (Nötr / Alım)</Text>
-          </View>
-          <View style={styles.rsiBarTrack}>
-            <View style={[styles.rsiZone, { left: 0, width: '30%', backgroundColor: 'rgba(0, 230, 118, 0.15)' }]} />
-            <View style={[styles.rsiZone, { left: '70%', width: '30%', backgroundColor: 'rgba(255, 59, 48, 0.15)' }]} />
-            <View style={[styles.rsiPointer, { left: '62.4%' }]} />
-          </View>
-          <View style={styles.rsiLabelsRow}>
-            <Text style={styles.rsiLabel}>0 (Aşırı Satım: 30)</Text>
-            <Text style={styles.rsiLabel}>70 (Aşırı Alım)</Text>
-            <Text style={styles.rsiLabel}>100</Text>
-          </View>
-        </View>
-      )}
+      {showRsi && <CoinRsiPanel value={62.4} />}
     </View>
   );
 };
@@ -180,52 +163,5 @@ const styles = StyleSheet.create({
     ...typography.captionBold,
     color: '#052914',
     fontSize: 11,
-  },
-  rsiPanel: {
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    padding: spacing.sm,
-    marginTop: spacing.xs,
-  },
-  rsiHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 6,
-  },
-  rsiTitle: {
-    ...typography.micro,
-  },
-  rsiValue: {
-    ...typography.captionBold,
-  },
-  rsiBarTrack: {
-    height: 8,
-    backgroundColor: '#1E293B',
-    borderRadius: 4,
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  rsiZone: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-  },
-  rsiPointer: {
-    position: 'absolute',
-    top: -2,
-    width: 4,
-    height: 12,
-    backgroundColor: '#00B2FE',
-    borderRadius: 2,
-  },
-  rsiLabelsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 4,
-  },
-  rsiLabel: {
-    ...typography.micro,
-    color: '#64748B',
-    fontSize: 9,
   },
 });
