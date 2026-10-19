@@ -12,6 +12,7 @@ import { Search, Plus } from 'lucide-react-native';
 import { colors, typography, spacing, borderRadius } from '../../../shared/theme';
 import { useApp } from '../../../context/AppContext';
 import { CoinRowItem } from '../components/CoinRowItem';
+import { AddWatchlistModal } from '../components/AddWatchlistModal';
 import { RootStackParamList } from '../../../navigation/navigation.types';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList>;
@@ -22,6 +23,7 @@ export const MarketScreen: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'all' | 'watchlist'>('all');
   const [activeFilter, setActiveFilter] = useState<'all' | 'ai' | 'popular'>('all');
+  const [watchlistModalVisible, setWatchlistModalVisible] = useState(false);
 
   const filteredCoins = coins.filter((coin) => {
     if (activeTab === 'watchlist') {
@@ -41,7 +43,10 @@ export const MarketScreen: React.FC = () => {
       {/* Başlık ve Arama */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Piyasa</Text>
-        <Pressable style={styles.searchButton}>
+        <Pressable
+          style={styles.searchButton}
+          onPress={() => setWatchlistModalVisible(true)}
+        >
           <Search size={20} color={colors.textSecondary} />
         </Pressable>
       </View>
@@ -52,9 +57,7 @@ export const MarketScreen: React.FC = () => {
           style={[styles.tabButton, activeTab === 'all' && styles.tabButtonActive]}
           onPress={() => setActiveTab('all')}
         >
-          <Text
-            style={[styles.tabText, activeTab === 'all' && styles.tabTextActive]}
-          >
+          <Text style={[styles.tabText, activeTab === 'all' && styles.tabTextActive]}>
             Tüm Piyasa
           </Text>
         </Pressable>
@@ -63,9 +66,7 @@ export const MarketScreen: React.FC = () => {
           style={[styles.tabButton, activeTab === 'watchlist' && styles.tabButtonActive]}
           onPress={() => setActiveTab('watchlist')}
         >
-          <Text
-            style={[styles.tabText, activeTab === 'watchlist' && styles.tabTextActive]}
-          >
+          <Text style={[styles.tabText, activeTab === 'watchlist' && styles.tabTextActive]}>
             ★ Takip Listem
           </Text>
         </Pressable>
@@ -133,7 +134,7 @@ export const MarketScreen: React.FC = () => {
         {activeTab === 'watchlist' && (
           <Pressable
             style={styles.addWatchlistButton}
-            onPress={() => setActiveTab('all')}
+            onPress={() => setWatchlistModalVisible(true)}
           >
             <Plus size={16} color={colors.textSecondary} />
             <Text style={styles.addWatchlistText}>
@@ -142,6 +143,12 @@ export const MarketScreen: React.FC = () => {
           </Pressable>
         )}
       </ScrollView>
+
+      {/* Takip Listesi Modal */}
+      <AddWatchlistModal
+        visible={watchlistModalVisible}
+        onClose={() => setWatchlistModalVisible(false)}
+      />
     </View>
   );
 };

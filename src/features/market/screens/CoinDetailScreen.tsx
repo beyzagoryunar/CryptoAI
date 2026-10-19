@@ -13,6 +13,7 @@ import { colors, typography, spacing, borderRadius } from '../../../shared/theme
 import { Header, Card, Button } from '../../../shared/components';
 import { useApp } from '../../../context/AppContext';
 import { CoinChartSection } from '../components/CoinChartSection';
+import { QuickTradeModal } from '../components/QuickTradeModal';
 import { RootStackParamList } from '../../../navigation/navigation.types';
 
 type DetailRouteProp = RouteProp<RootStackParamList, 'CoinDetail'>;
@@ -27,6 +28,13 @@ export const CoinDetailScreen: React.FC = () => {
   const coin = coins.find((c) => c.symbol === symbol) || coins[0];
 
   const [timeframe, setTimeframe] = useState<'1S' | '24S' | '1H' | '1A' | 'YTD'>('24S');
+  const [tradeModalVisible, setTradeModalVisible] = useState(false);
+  const [tradeType, setTradeType] = useState<'BUY' | 'SELL'>('BUY');
+
+  const handleOpenTrade = (type: 'BUY' | 'SELL') => {
+    setTradeType(type);
+    setTradeModalVisible(true);
+  };
 
   return (
     <View style={styles.screen}>
@@ -57,7 +65,6 @@ export const CoinDetailScreen: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Fiyat ve Değişim Hero */}
         <Text style={styles.heroPrice}>
           ${coin.priceUsd.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
         </Text>
@@ -72,10 +79,8 @@ export const CoinDetailScreen: React.FC = () => {
           <Text style={styles.periodText}>Bugün</Text>
         </View>
 
-        {/* Grafik Bölümü */}
-        <CoinChartSection currentPrice="83.719" />
+        <CoinChartSection currentPrice={coin.priceUsd > 1000 ? coin.priceUsd.toFixed(0) : coin.priceUsd.toFixed(2)} />
 
-        {/* Zaman Dilimi Seçici */}
         <View style={styles.timeframeRow}>
           {(['1S', '24S', '1H', '1A', 'YTD'] as const).map((tf) => (
             <Pressable
@@ -83,16 +88,13 @@ export const CoinDetailScreen: React.FC = () => {
               style={[styles.tfButton, timeframe === tf && styles.tfButtonActive]}
               onPress={() => setTimeframe(tf)}
             >
-              <Text
-                style={[styles.tfText, timeframe === tf && styles.tfTextActive]}
-              >
+              <Text style={[styles.tfText, timeframe === tf && styles.tfTextActive]}>
                 {tf}
               </Text>
             </Pressable>
           ))}
         </View>
 
-        {/* 2x2 İstatistik Izgarası */}
         <View style={styles.statsGrid}>
           <Card style={styles.statCard}>
             <Text style={styles.statLabel}>24s Yüksek</Text>
@@ -114,43 +116,42 @@ export const CoinDetailScreen: React.FC = () => {
           </Card>
         </View>
 
-        {/* AI Karar Motoru Kartı */}
         <Card variant="active" style={styles.aiEngineCard}>
           <View style={styles.aiHeader}>
             <Text style={styles.aiTitle}>AI Karar Motoru (LSTM+XGBoost)</Text>
-            <Text style={styles.aiConfidence}>
-              %{coin.aiConfidencePercent} Güven
-            </Text>
+            <Text style={styles.aiConfidence}>%{coin.aiConfidencePercent} Güven</Text>
           </View>
 
           <View style={styles.progressTrack}>
-            <View
-              style={[
-                styles.progressBar,
-                { width: `${coin.aiConfidencePercent}%` },
-              ]}
-            />
+            <View style={[styles.progressBar, { width: `${coin.aiConfidencePercent}%` }]} />
           </View>
 
           <Text style={styles.aiRationale}>{coin.aiAnalysisText}</Text>
         </Card>
       </ScrollView>
 
-      {/* Alt AL / SAT Buton Çubuğu */}
+      {/* Alt Sabit AL / SAT Buton Çubuğu */}
       <View style={styles.bottomBar}>
         <Button
           title="SAT"
           variant="danger"
           style={styles.halfBtn}
-          onPress={() => {}}
+          onPress={() => handleOpenTrade('SELL')}
         />
         <Button
           title="AL"
           variant="success"
           style={styles.halfBtn}
-          onPress={() => {}}
+          onPress={() => handleOpenTrade('BUY')}
         />
       </View>
+
+      <QuickTradeModal
+        visible={tradeModalVisible}
+        onClose={() => setTradeModalVisible(false)}
+        coin={coin}
+        tradeType={tradeType}
+      />
     </View>
   );
 };
@@ -191,7 +192,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: spacing.screenPadding,
-    paddingBottom: 90,
+    paddingBottom: 120,
   },
   heroPrice: {
     ...typography.heroPrice,
@@ -310,9 +311,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     borderTopWidth: 1,
     borderTopColor: colors.border,
-    padding: spacing.screenPadding,
+    paddingHorizontal: spacing.screenPadding,
+    paddingTop: spacing.md,
+    paddingBottom: 22,
     flexDirection: 'row',
     gap: spacing.md,
+    zIndex: 100,
   },
   halfBtn: {
     flex: 1,

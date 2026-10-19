@@ -13,6 +13,7 @@ import { colors, typography, spacing, borderRadius } from '../../../shared/theme
 import { Card, Button } from '../../../shared/components';
 import { useApp } from '../../../context/AppContext';
 import { RootStackParamList } from '../../../navigation/navigation.types';
+import { AutopilotConfigCard } from '../components/AutopilotConfigCard';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -80,6 +81,9 @@ export const AutopilotScreen: React.FC = () => {
             </Text>
           </Card>
         </View>
+
+        {/* Otopilot Özelleştirme ve Strateji Ayarları */}
+        <AutopilotConfigCard />
 
         {/* Son AI İşlemleri (LOG) */}
         <Text style={styles.sectionHeader}>SON AI İŞLEMLERİ (LOG)</Text>

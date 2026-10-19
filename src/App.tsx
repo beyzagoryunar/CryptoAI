@@ -1,6 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { StatusBar, StyleSheet, View, Text } from 'react-native';
 import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { AppProvider } from './context/AppContext';
 import { RootNavigator } from './navigation/RootNavigator';
@@ -44,6 +45,21 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 }
 
+const ThemedAppContent: React.FC = () => {
+  const { isDark, colors: activeColors } = useTheme();
+
+  return (
+    <View style={[styles.container, { backgroundColor: activeColors.background }]}>
+      <StatusBar
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={activeColors.background}
+        translucent
+      />
+      <RootNavigator />
+    </View>
+  );
+};
+
 export default function App() {
   return (
     <SafeAreaProvider
@@ -55,19 +71,14 @@ export default function App() {
       }
       style={styles.container}
     >
-      <StatusBar
-        barStyle="light-content"
-        backgroundColor={colors.background}
-        translucent
-      />
       <ErrorBoundary>
-        <AuthProvider>
-          <AppProvider>
-            <View style={styles.container}>
-              <RootNavigator />
-            </View>
-          </AppProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <AppProvider>
+              <ThemedAppContent />
+            </AppProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </ErrorBoundary>
     </SafeAreaProvider>
   );

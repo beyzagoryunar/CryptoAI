@@ -10,12 +10,21 @@ import { Bell, ChevronRight, Check } from 'lucide-react-native';
 import { colors, typography, spacing, borderRadius } from '../../../shared/theme';
 import { Card, Toggle, Button } from '../../../shared/components';
 import { useAuth } from '../../../context/AuthContext';
+import { useTheme } from '../../../context/ThemeContext';
 
 export const ProfileScreen: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, sessionDaysRemaining, sessionExpiryDate, refreshSession } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
 
   const [autopilotPermission, setAutopilotPermission] = useState(true);
   const [faceIdEnabled, setFaceIdEnabled] = useState(true);
+  const [sessionRefreshed, setSessionRefreshed] = useState(false);
+
+  const handleRefreshSession = async () => {
+    await refreshSession();
+    setSessionRefreshed(true);
+    setTimeout(() => setSessionRefreshed(false), 2500);
+  };
 
   return (
     <View style={styles.screen}>
@@ -102,9 +111,39 @@ export const ProfileScreen: React.FC = () => {
           </View>
         </Card>
 
-        {/* Bölüm: GÜVENLİK */}
-        <Text style={styles.sectionHeader}>GÜVENLİK</Text>
+        {/* Bölüm: GÖRÜNÜM VE TEMA */}
+        <Text style={styles.sectionHeader}>GÖRÜNÜM VE TEMA</Text>
         <Card style={styles.menuCard}>
+          <View style={styles.menuRow}>
+            <View>
+              <Text style={styles.menuLabel}>Karanlık Mod (Dark Theme)</Text>
+              <Text style={styles.subLabelText}>
+                {isDark ? 'Karanlık tema aktif' : 'Açık tema aktif'}
+              </Text>
+            </View>
+            <Toggle value={isDark} onValueChange={toggleTheme} />
+          </View>
+        </Card>
+
+        {/* Bölüm: GÜVENLİK */}
+        <Text style={styles.sectionHeader}>GÜVENLİK VE OTURUM</Text>
+        <Card style={styles.menuCard}>
+          <Pressable style={styles.menuRow} onPress={handleRefreshSession}>
+            <View>
+              <Text style={styles.menuLabel}>Oturum Süresi (Beni Hatırla)</Text>
+              <Text style={styles.subLabelText}>
+                Bitiş: {sessionExpiryDate} ({sessionDaysRemaining} gün kaldı)
+              </Text>
+            </View>
+            <View style={styles.menuValueRow}>
+              <Text style={[styles.menuValue, { color: sessionRefreshed ? colors.success : colors.primary }]}>
+                {sessionRefreshed ? '✓ 30 Gün Uzatıldı' : '+30 Gün Uzat'}
+              </Text>
+            </View>
+          </Pressable>
+
+          <View style={styles.divider} />
+
           <Pressable style={styles.menuRow}>
             <Text style={styles.menuLabel}>Google Authenticator (2FA)</Text>
             <View style={styles.menuValueRow}>
@@ -240,6 +279,11 @@ const styles = StyleSheet.create({
   menuValue: {
     ...typography.captionBold,
     color: colors.textSecondary,
+  },
+  subLabelText: {
+    ...typography.micro,
+    color: colors.textMuted,
+    marginTop: 2,
   },
   divider: {
     height: 1,
