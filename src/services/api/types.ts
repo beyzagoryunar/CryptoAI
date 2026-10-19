@@ -85,3 +85,27 @@ export interface CreateAlarmDto {
   autoSellAutopilot: boolean;
   sellPercentage?: number;
 }
+
+// Mum Grafiği Veri Tipi (OHLCV)
+export interface CandleDto {
+  time: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+// Backtest (Geçmiş Strateji Simülasyonu) Sonuç Tipi
+export interface BacktestResultDto {
+  period: string;
+  totalReturnPercent: number;
+  initialCapitalUsd: number;
+  finalCapitalUsd: number;
+  winRatePercent: number;
+  tradesCount: number;
+  maxDrawdownPercent: number;
+  sharpeRatio: number;
+  equityCurve: number[];
+}
+

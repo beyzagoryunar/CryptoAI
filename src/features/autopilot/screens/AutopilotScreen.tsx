@@ -14,6 +14,7 @@ import { Card } from '../../../shared/components';
 import { useApp } from '../../../context/AppContext';
 import { RootStackParamList } from '../../../navigation/navigation.types';
 import { AutopilotConfigCard } from '../components/AutopilotConfigCard';
+import { AutopilotBacktestCard } from '../components/AutopilotBacktestCard';
 import { useTheme } from '../../../context/ThemeContext';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList>;
@@ -94,6 +95,9 @@ export const AutopilotScreen: React.FC = () => {
 
         {/* Otopilot Özelleştirme ve Strateji Ayarları */}
         <AutopilotConfigCard />
+
+        {/* Geçmiş Strateji Simülasyonu (Backtest) */}
+        <AutopilotBacktestCard />
 
         {/* Son AI İşlemleri (LOG) */}
         <Text style={[styles.sectionHeader, { color: colors.textMuted }]}>SON AI İŞLEMLERİ (LOG)</Text>
