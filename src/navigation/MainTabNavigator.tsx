@@ -8,17 +8,27 @@ import { MarketScreen } from '../features/market/screens/MarketScreen';
 import { AutopilotScreen } from '../features/autopilot/screens/AutopilotScreen';
 import { ProfileScreen } from '../features/profile/screens/ProfileScreen';
 import { colors, typography } from '../shared/theme';
+import { useTheme } from '../context/ThemeContext';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export const MainTabNavigator: React.FC = () => {
+  const { colors, isDark } = useTheme();
+
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarStyle: styles.tabBar,
+        tabBarStyle: {
+          backgroundColor: isDark ? '#070B11' : colors.card,
+          borderTopWidth: 1,
+          borderTopColor: colors.border,
+          height: 64,
+          paddingBottom: 8,
+          paddingTop: 8,
+        },
         tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: '#526075',
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarLabelStyle: styles.tabLabel,
       }}
     >

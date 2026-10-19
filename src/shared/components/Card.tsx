@@ -4,12 +4,14 @@ import {
   StyleSheet,
   ViewStyle,
   Pressable,
+  StyleProp,
 } from 'react-native';
 import { colors, spacing, borderRadius } from '../theme';
+import { useTheme } from '../../context/ThemeContext';
 
 interface CardProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   variant?: 'default' | 'active' | 'subtle';
   onPress?: () => void;
 }
@@ -20,9 +22,17 @@ export const Card: React.FC<CardProps> = ({
   variant = 'default',
   onPress,
 }) => {
+  const { colors, isDark } = useTheme();
+
+  const dynamicCardStyle: ViewStyle = {
+    backgroundColor: variant === 'subtle' ? colors.cardSecondary : colors.card,
+    borderColor: variant === 'active' ? colors.primary : colors.border,
+  };
+
   const containerStyles = [
     styles.card,
-    variant === 'active' && styles.activeCard,
+    dynamicCardStyle,
+    variant === 'active' && (isDark ? styles.activeCardDark : styles.activeCardLight),
     variant === 'subtle' && styles.subtleCard,
     style,
   ];
@@ -53,12 +63,15 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     marginBottom: spacing.md,
   },
-  activeCard: {
+  activeCardDark: {
     borderColor: colors.primary,
     backgroundColor: '#0E1624',
   },
+  activeCardLight: {
+    borderColor: colors.primary,
+    backgroundColor: '#F0F9FF',
+  },
   subtleCard: {
-    backgroundColor: colors.cardSecondary,
     borderColor: 'transparent',
   },
   pressed: {

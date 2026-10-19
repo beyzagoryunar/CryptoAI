@@ -4,20 +4,22 @@ import { Sliders, Shield, TrendingUp } from 'lucide-react-native';
 import { colors, typography, spacing, borderRadius } from '../../../shared/theme';
 import { Card } from '../../../shared/components/Card';
 import { useApp, RiskProfileType } from '../../../context/AppContext';
+import { useTheme } from '../../../context/ThemeContext';
 
 export const AutopilotConfigCard: React.FC = () => {
   const { autopilotSettings, updateAutopilotSettings } = useApp();
+  const { colors, isDark } = useTheme();
 
   const riskProfiles: RiskProfileType[] = ['Muhafazakar', 'Dengeli', 'Agresif'];
   const stopLossOptions = [5, 10, 15];
   const takeProfitOptions = [10, 20, 30];
 
   return (
-    <Card style={styles.card}>
+    <Card style={[styles.card, { backgroundColor: isDark ? '#0E1624' : colors.card, borderColor: colors.border }]}>
       <View style={styles.headerRow}>
         <View style={styles.titleGroup}>
           <Sliders size={18} color={colors.primary} />
-          <Text style={styles.cardTitle}>Otopilot Strateji Ayarları</Text>
+          <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>Otopilot Strateji Ayarları</Text>
         </View>
         <Text style={styles.activeRiskBadge}>{autopilotSettings.riskProfile}</Text>
       </View>

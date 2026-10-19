@@ -12,6 +12,7 @@ import { Bell } from 'lucide-react-native';
 import { colors, typography, spacing, borderRadius } from '../../../shared/theme';
 import { Card, Badge } from '../../../shared/components';
 import { useApp } from '../../../context/AppContext';
+import { useTheme } from '../../../context/ThemeContext';
 import { HoldingItem } from '../components/HoldingItem';
 import { RootStackParamList } from '../../../navigation/navigation.types';
 
@@ -20,9 +21,10 @@ type NavProp = NativeStackNavigationProp<RootStackParamList>;
 export const PortfolioScreen: React.FC = () => {
   const navigation = useNavigation<NavProp>();
   const { portfolio } = useApp();
+  const { colors, isDark } = useTheme();
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { backgroundColor: colors.background }]}>
       {/* Üst Başlık */}
       <View style={styles.header}>
         <View style={styles.avatar}>
@@ -30,11 +32,11 @@ export const PortfolioScreen: React.FC = () => {
         </View>
 
         <View style={styles.brandRow}>
-          <Text style={styles.brandTitle}>Crypto</Text>
+          <Text style={[styles.brandTitle, { color: colors.textPrimary }]}>Crypto</Text>
           <Text style={styles.brandCyan}>AI</Text>
         </View>
 
-        <Pressable style={styles.bellButton}>
+        <Pressable style={[styles.bellButton, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}>
           <Bell size={20} color={colors.textPrimary} />
           <View style={styles.unreadDot} />
         </Pressable>
@@ -47,13 +49,13 @@ export const PortfolioScreen: React.FC = () => {
         {/* Toplam Bakiye Hero Kartı */}
         <Card style={styles.balanceCard}>
           <View style={styles.balanceHeader}>
-            <Text style={styles.balanceLabel}>Toplam Sanal Bakiye</Text>
+            <Text style={[styles.balanceLabel, { color: colors.textSecondary }]}>Toplam Sanal Bakiye</Text>
             {portfolio.isAutopilotActive && (
               <Badge label="● Otopilot Açık" variant="autopilot" />
             )}
           </View>
 
-          <Text style={styles.balanceAmount}>
+          <Text style={[styles.balanceAmount, { color: colors.textPrimary }]}>
             ${portfolio.totalBalanceUsd.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
           </Text>
 
@@ -79,13 +81,13 @@ export const PortfolioScreen: React.FC = () => {
             <Text style={styles.analysisEmoji}>🤖</Text>
             <Text style={styles.analysisTitle}>LLM Portföy Analizi</Text>
           </View>
-          <Text style={styles.analysisBody}>{portfolio.llmAnalysisText}</Text>
+          <Text style={[styles.analysisBody, { color: colors.textSecondary }]}>{portfolio.llmAnalysisText}</Text>
         </Card>
 
         {/* Cüzdanımdaki Varlıklar Başlığı */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Cüzdanımdaki Varlıklar</Text>
-          <Text style={styles.sectionCount}>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Cüzdanımdaki Varlıklar</Text>
+          <Text style={[styles.sectionCount, { color: colors.textMuted }]}>
             {portfolio.holdings.length} Pozisyon
           </Text>
         </View>

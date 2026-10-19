@@ -8,9 +8,10 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Search, Plus } from 'lucide-react-native';
+import { Search, Plus, Star } from 'lucide-react-native';
 import { colors, typography, spacing, borderRadius } from '../../../shared/theme';
 import { useApp } from '../../../context/AppContext';
+import { useTheme } from '../../../context/ThemeContext';
 import { CoinRowItem } from '../components/CoinRowItem';
 import { AddWatchlistModal } from '../components/AddWatchlistModal';
 import { RootStackParamList } from '../../../navigation/navigation.types';
@@ -19,7 +20,8 @@ type NavProp = NativeStackNavigationProp<RootStackParamList>;
 
 export const MarketScreen: React.FC = () => {
   const navigation = useNavigation<NavProp>();
-  const { coins } = useApp();
+  const { coins, toggleWatchlist } = useApp();
+  const { colors, isDark } = useTheme();
 
   const [activeTab, setActiveTab] = useState<'all' | 'watchlist'>('all');
   const [activeFilter, setActiveFilter] = useState<'all' | 'ai' | 'popular'>('all');
@@ -38,13 +40,15 @@ export const MarketScreen: React.FC = () => {
     return true;
   });
 
+  const watchlistedCount = coins.filter((c) => c.isWatchlisted).length;
+
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { backgroundColor: colors.background }]}>
       {/* Başlık ve Arama */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Piyasa</Text>
+        <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Piyasa</Text>
         <Pressable
-          style={styles.searchButton}
+          style={[styles.searchButton, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}
           onPress={() => setWatchlistModalVisible(true)}
         >
           <Search size={20} color={colors.textSecondary} />
@@ -52,22 +56,22 @@ export const MarketScreen: React.FC = () => {
       </View>
 
       {/* Segmentli Ana Sekme (Tüm Piyasa vs Takip Listem) */}
-      <View style={styles.tabContainer}>
+      <View style={[styles.tabContainer, { backgroundColor: isDark ? '#10151E' : '#E2E8F0' }]}>
         <Pressable
-          style={[styles.tabButton, activeTab === 'all' && styles.tabButtonActive]}
+          style={[styles.tabButton, activeTab === 'all' && [styles.tabButtonActive, { backgroundColor: colors.card }]]}
           onPress={() => setActiveTab('all')}
         >
-          <Text style={[styles.tabText, activeTab === 'all' && styles.tabTextActive]}>
+          <Text style={[styles.tabText, activeTab === 'all' && [styles.tabTextActive, { color: colors.textPrimary }]]}>
             Tüm Piyasa
           </Text>
         </Pressable>
 
         <Pressable
-          style={[styles.tabButton, activeTab === 'watchlist' && styles.tabButtonActive]}
+          style={[styles.tabButton, activeTab === 'watchlist' && [styles.tabButtonActive, { backgroundColor: colors.card }]]}
           onPress={() => setActiveTab('watchlist')}
         >
-          <Text style={[styles.tabText, activeTab === 'watchlist' && styles.tabTextActive]}>
-            ★ Takip Listem
+          <Text style={[styles.tabText, activeTab === 'watchlist' && [styles.tabTextActive, { color: colors.textPrimary }]]}>
+            ★ Takip Listem ({watchlistedCount})
           </Text>
         </Pressable>
       </View>
@@ -76,28 +80,40 @@ export const MarketScreen: React.FC = () => {
       {activeTab === 'all' && (
         <View style={styles.filterRow}>
           <Pressable
-            style={[styles.filterChip, activeFilter === 'all' && styles.chipActive]}
+            style={[
+              styles.filterChip,
+              { backgroundColor: colors.card, borderColor: colors.border },
+              activeFilter === 'all' && [styles.chipActive, { backgroundColor: isDark ? '#0F1A28' : '#E0F2FE', borderColor: colors.primary }],
+            ]}
             onPress={() => setActiveFilter('all')}
           >
-            <Text style={[styles.chipText, activeFilter === 'all' && styles.chipTextActive]}>
+            <Text style={[styles.chipText, { color: activeFilter === 'all' ? colors.primary : colors.textSecondary }]}>
               Tümü
             </Text>
           </Pressable>
 
           <Pressable
-            style={[styles.filterChip, activeFilter === 'ai' && styles.chipActive]}
+            style={[
+              styles.filterChip,
+              { backgroundColor: colors.card, borderColor: colors.border },
+              activeFilter === 'ai' && [styles.chipActive, { backgroundColor: isDark ? '#0F1A28' : '#E0F2FE', borderColor: colors.primary }],
+            ]}
             onPress={() => setActiveFilter('ai')}
           >
-            <Text style={[styles.chipText, activeFilter === 'ai' && styles.chipTextActive]}>
+            <Text style={[styles.chipText, { color: activeFilter === 'ai' ? colors.primary : colors.textSecondary }]}>
               🟢🤖 AI Sinyalleri
             </Text>
           </Pressable>
 
           <Pressable
-            style={[styles.filterChip, activeFilter === 'popular' && styles.chipActive]}
+            style={[
+              styles.filterChip,
+              { backgroundColor: colors.card, borderColor: colors.border },
+              activeFilter === 'popular' && [styles.chipActive, { backgroundColor: isDark ? '#0F1A28' : '#E0F2FE', borderColor: colors.primary }],
+            ]}
             onPress={() => setActiveFilter('popular')}
           >
-            <Text style={[styles.chipText, activeFilter === 'popular' && styles.chipTextActive]}>
+            <Text style={[styles.chipText, { color: activeFilter === 'popular' ? colors.primary : colors.textSecondary }]}>
               🔥 Popüler
             </Text>
           </Pressable>
@@ -105,16 +121,17 @@ export const MarketScreen: React.FC = () => {
       )}
 
       {/* Tablo Sütun Başlıkları */}
-      <View style={styles.tableHeaderRow}>
-        <Text style={[styles.columnHeader, { flex: 2 }]}>
+      <View style={[styles.tableHeaderRow, { borderBottomColor: colors.border }]}>
+        <Text style={[styles.columnHeader, { flex: 2, color: colors.textMuted }]}>
           {activeTab === 'watchlist' ? 'TAKİP EDİLEN VARLIK' : 'VARLIK'}
         </Text>
-        <Text style={[styles.columnHeader, { flex: 1.5, textAlign: 'center' }]}>
+        <Text style={[styles.columnHeader, { flex: 1.4, textAlign: 'center', color: colors.textMuted }]}>
           AI SİNYALİ
         </Text>
-        <Text style={[styles.columnHeader, { flex: 2, textAlign: 'right' }]}>
+        <Text style={[styles.columnHeader, { flex: 1.8, textAlign: 'right', color: colors.textMuted }]}>
           FİYAT
         </Text>
+        <View style={{ width: 28 }} />
       </View>
 
       {/* Coin Listesi */}
@@ -122,23 +139,35 @@ export const MarketScreen: React.FC = () => {
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       >
-        {filteredCoins.map((coin) => (
-          <CoinRowItem
-            key={coin.symbol}
-            coin={coin}
-            onPress={() => navigation.navigate('CoinDetail', { symbol: coin.symbol })}
-          />
-        ))}
+        {filteredCoins.length > 0 ? (
+          filteredCoins.map((coin) => (
+            <CoinRowItem
+              key={coin.symbol}
+              coin={coin}
+              showWatchlistAction={true}
+              onToggleWatchlist={toggleWatchlist}
+              onPress={() => navigation.navigate('CoinDetail', { symbol: coin.symbol })}
+            />
+          ))
+        ) : (
+          <View style={styles.emptyContainer}>
+            <Star size={36} color={colors.textMuted} />
+            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Takip Listeniz Boş</Text>
+            <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+              Aşağıdaki butona dokunarak takip etmek istediğiniz coinleri listenize ekleyebilirsiniz.
+            </Text>
+          </View>
+        )}
 
-        {/* Takip Listesi Ekleme Butonu */}
+        {/* Takip Listesi Ekleme / Düzenleme Butonu */}
         {activeTab === 'watchlist' && (
           <Pressable
-            style={styles.addWatchlistButton}
+            style={[styles.addWatchlistButton, { borderColor: colors.border, backgroundColor: colors.card }]}
             onPress={() => setWatchlistModalVisible(true)}
           >
-            <Plus size={16} color={colors.textSecondary} />
-            <Text style={styles.addWatchlistText}>
-              Takip Listesine Yeni Coin Ekle
+            <Plus size={16} color={colors.primary} />
+            <Text style={[styles.addWatchlistText, { color: colors.primary }]}>
+              + Takip Listesine Yeni Coin Ekle
             </Text>
           </Pressable>
         )}
@@ -224,11 +253,9 @@ const styles = StyleSheet.create({
     ...typography.captionBold,
     color: colors.textSecondary,
   },
-  chipTextActive: {
-    color: colors.primary,
-  },
   tableHeaderRow: {
     flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: spacing.screenPadding,
     paddingVertical: spacing.xs,
     borderBottomWidth: 1,
@@ -242,8 +269,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.screenPadding,
     paddingBottom: spacing.xxl,
   },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.xxl,
+    paddingHorizontal: spacing.xl,
+  },
+  emptyTitle: {
+    ...typography.bodyBold,
+    fontSize: 16,
+    marginTop: spacing.md,
+    marginBottom: spacing.xs,
+  },
+  emptySubtitle: {
+    ...typography.caption,
+    textAlign: 'center',
+    lineHeight: 18,
+  },
   addWatchlistButton: {
-    marginTop: spacing.xl,
+    marginTop: spacing.lg,
     paddingVertical: spacing.md,
     borderWidth: 1.5,
     borderStyle: 'dashed',
@@ -255,7 +299,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   addWatchlistText: {
-    ...typography.bodyMedium,
+    ...typography.bodyBold,
     color: colors.textSecondary,
   },
 });

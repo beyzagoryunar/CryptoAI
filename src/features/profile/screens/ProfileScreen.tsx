@@ -14,7 +14,7 @@ import { useTheme } from '../../../context/ThemeContext';
 
 export const ProfileScreen: React.FC = () => {
   const { user, logout, sessionDaysRemaining, sessionExpiryDate, refreshSession } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
+  const { isDark, toggleTheme, colors } = useTheme();
 
   const [autopilotPermission, setAutopilotPermission] = useState(true);
   const [faceIdEnabled, setFaceIdEnabled] = useState(true);
@@ -27,11 +27,11 @@ export const ProfileScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { backgroundColor: colors.background }]}>
       {/* Üst Başlık */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Hesabım</Text>
-        <Pressable style={styles.bellButton}>
+        <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Hesabım</Text>
+        <Pressable style={[styles.bellButton, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}>
           <Bell size={20} color={colors.textPrimary} />
         </Pressable>
       </View>
@@ -43,15 +43,15 @@ export const ProfileScreen: React.FC = () => {
         {/* Kullanıcı Profil Kartı */}
         <Card style={styles.profileCard}>
           <View style={styles.profileRow}>
-            <View style={styles.avatarCircle}>
+            <View style={[styles.avatarCircle, { backgroundColor: isDark ? '#1C2738' : '#E0F2FE' }]}>
               <Text style={styles.avatarText}>BG</Text>
             </View>
 
             <View style={styles.profileInfo}>
-              <Text style={styles.nameText}>
+              <Text style={[styles.nameText, { color: colors.textPrimary }]}>
                 {user ? `${user.firstName} ${user.lastName}` : 'Beyza Göryunar'}
               </Text>
-              <Text style={styles.uidText}>
+              <Text style={[styles.uidText, { color: colors.textSecondary }]}>
                 UID: {user?.uid || '231002035'}
               </Text>
 
@@ -64,20 +64,20 @@ export const ProfileScreen: React.FC = () => {
         </Card>
 
         {/* Bölüm: FİNANSAL İŞLEMLER */}
-        <Text style={styles.sectionHeader}>FİNANSAL İŞLEMLER</Text>
+        <Text style={[styles.sectionHeader, { color: colors.textMuted }]}>FİNANSAL İŞLEMLER</Text>
         <Card style={styles.menuCard}>
           <Pressable style={styles.menuRow}>
-            <Text style={styles.menuLabel}>Banka Hesaplarım</Text>
+            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>Banka Hesaplarım</Text>
             <View style={styles.menuValueRow}>
-              <Text style={styles.menuValue}>2 Kayıtlı</Text>
+              <Text style={[styles.menuValue, { color: colors.textSecondary }]}>2 Kayıtlı</Text>
               <ChevronRight size={16} color={colors.textSecondary} />
             </View>
           </Pressable>
 
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
           <Pressable style={styles.menuRow}>
-            <Text style={styles.menuLabel}>Komisyon Oranları</Text>
+            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>Komisyon Oranları</Text>
             <View style={styles.menuValueRow}>
               <Text style={[styles.menuValue, { color: colors.success }]}>
                 %0.08
@@ -88,10 +88,10 @@ export const ProfileScreen: React.FC = () => {
         </Card>
 
         {/* Bölüm: YAPAY ZEKA VE OTOPİLOT */}
-        <Text style={styles.sectionHeader}>YAPAY ZEKA VE OTOPİLOT</Text>
+        <Text style={[styles.sectionHeader, { color: colors.textMuted }]}>YAPAY ZEKA VE OTOPİLOT</Text>
         <Card style={styles.menuCard}>
           <Pressable style={styles.menuRow}>
-            <Text style={styles.menuLabel}>AI Risk Profili</Text>
+            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>AI Risk Profili</Text>
             <View style={styles.menuValueRow}>
               <Text style={[styles.menuValue, { color: colors.primary }]}>
                 Dengeli
@@ -100,10 +100,10 @@ export const ProfileScreen: React.FC = () => {
             </View>
           </Pressable>
 
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
           <View style={styles.menuRow}>
-            <Text style={styles.menuLabel}>Otopilot İşlem İzni</Text>
+            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>Otopilot İşlem İzni</Text>
             <Toggle
               value={autopilotPermission}
               onValueChange={setAutopilotPermission}
@@ -112,12 +112,12 @@ export const ProfileScreen: React.FC = () => {
         </Card>
 
         {/* Bölüm: GÖRÜNÜM VE TEMA */}
-        <Text style={styles.sectionHeader}>GÖRÜNÜM VE TEMA</Text>
+        <Text style={[styles.sectionHeader, { color: colors.textMuted }]}>GÖRÜNÜM VE TEMA</Text>
         <Card style={styles.menuCard}>
           <View style={styles.menuRow}>
             <View>
-              <Text style={styles.menuLabel}>Karanlık Mod (Dark Theme)</Text>
-              <Text style={styles.subLabelText}>
+              <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>Karanlık Mod (Dark Theme)</Text>
+              <Text style={[styles.subLabelText, { color: colors.textMuted }]}>
                 {isDark ? 'Karanlık tema aktif' : 'Açık tema aktif'}
               </Text>
             </View>
@@ -126,12 +126,12 @@ export const ProfileScreen: React.FC = () => {
         </Card>
 
         {/* Bölüm: GÜVENLİK */}
-        <Text style={styles.sectionHeader}>GÜVENLİK VE OTURUM</Text>
+        <Text style={[styles.sectionHeader, { color: colors.textMuted }]}>GÜVENLİK VE OTURUM</Text>
         <Card style={styles.menuCard}>
           <Pressable style={styles.menuRow} onPress={handleRefreshSession}>
             <View>
-              <Text style={styles.menuLabel}>Oturum Süresi (Beni Hatırla)</Text>
-              <Text style={styles.subLabelText}>
+              <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>Oturum Süresi (Beni Hatırla)</Text>
+              <Text style={[styles.subLabelText, { color: colors.textMuted }]}>
                 Bitiş: {sessionExpiryDate} ({sessionDaysRemaining} gün kaldı)
               </Text>
             </View>
@@ -142,10 +142,10 @@ export const ProfileScreen: React.FC = () => {
             </View>
           </Pressable>
 
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
           <Pressable style={styles.menuRow}>
-            <Text style={styles.menuLabel}>Google Authenticator (2FA)</Text>
+            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>Google Authenticator (2FA)</Text>
             <View style={styles.menuValueRow}>
               <Text style={[styles.menuValue, { color: colors.success }]}>
                 Açık
@@ -154,17 +154,17 @@ export const ProfileScreen: React.FC = () => {
             </View>
           </Pressable>
 
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
           <View style={styles.menuRow}>
-            <Text style={styles.menuLabel}>FaceID ile Giriş</Text>
+            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>FaceID ile Giriş</Text>
             <Toggle value={faceIdEnabled} onValueChange={setFaceIdEnabled} />
           </View>
         </Card>
 
         {/* Çıkış Yap Butonu */}
         <Pressable
-          style={styles.logoutButton}
+          style={[styles.logoutButton, { backgroundColor: colors.card, borderColor: colors.border }]}
           onPress={logout}
         >
           <Text style={styles.logoutText}>Güvenli Çıkış Yap</Text>

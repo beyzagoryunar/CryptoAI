@@ -14,17 +14,19 @@ import { Card, Button } from '../../../shared/components';
 import { useApp } from '../../../context/AppContext';
 import { RootStackParamList } from '../../../navigation/navigation.types';
 import { AutopilotConfigCard } from '../components/AutopilotConfigCard';
+import { useTheme } from '../../../context/ThemeContext';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList>;
 
 export const AutopilotScreen: React.FC = () => {
   const navigation = useNavigation<NavProp>();
   const { autopilot, toggleAutopilot } = useApp();
+  const { colors, isDark } = useTheme();
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>AI Otopilot</Text>
+        <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>AI Otopilot</Text>
       </View>
 
       <ScrollView

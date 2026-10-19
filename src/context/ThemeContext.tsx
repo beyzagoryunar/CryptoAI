@@ -23,6 +23,16 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     loadTheme();
   }, []);
 
+  const activeColors = theme === 'dark' ? darkColors : lightColors;
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', theme);
+      document.body.style.backgroundColor = activeColors.background;
+      document.body.style.color = activeColors.textPrimary;
+    }
+  }, [theme, activeColors]);
+
   const loadTheme = async () => {
     try {
       const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
@@ -46,8 +56,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
-
-  const activeColors = theme === 'dark' ? darkColors : lightColors;
 
   return (
     <ThemeContext.Provider

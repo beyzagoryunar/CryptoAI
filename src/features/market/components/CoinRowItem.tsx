@@ -1,16 +1,25 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { Bell } from 'lucide-react-native';
+import { Bell, Star } from 'lucide-react-native';
 import { CoinMarketDto } from '../../../services/api/types';
 import { colors, typography, spacing, borderRadius } from '../../../shared/theme';
 import { Badge, BadgeVariant } from '../../../shared/components/Badge';
+import { useTheme } from '../../../context/ThemeContext';
 
 interface CoinRowItemProps {
   coin: CoinMarketDto;
   onPress: () => void;
+  onToggleWatchlist?: (symbol: string) => void;
+  showWatchlistAction?: boolean;
 }
 
-export const CoinRowItem: React.FC<CoinRowItemProps> = ({ coin, onPress }) => {
+export const CoinRowItem: React.FC<CoinRowItemProps> = ({
+  coin,
+  onPress,
+  onToggleWatchlist,
+  showWatchlistAction = false,
+}) => {
+  const { colors } = useTheme();
   const isPositive = coin.change24h >= 0;
 
   const getSignalVariant = (signal: string): BadgeVariant => {
@@ -29,7 +38,11 @@ export const CoinRowItem: React.FC<CoinRowItemProps> = ({ coin, onPress }) => {
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.row,
+        { borderBottomColor: colors.border },
+        pressed && styles.pressed,
+      ]}
     >
       {/* Varlık İkon ve Bilgisi */}
       <View style={styles.assetCol}>
@@ -37,8 +50,8 @@ export const CoinRowItem: React.FC<CoinRowItemProps> = ({ coin, onPress }) => {
           <Text style={styles.coinIconText}>{coin.iconLetter}</Text>
         </View>
         <View>
-          <Text style={styles.symbol}>{coin.symbol}</Text>
-          <Text style={styles.name}>{coin.name}</Text>
+          <Text style={[styles.symbol, { color: colors.textPrimary }]}>{coin.symbol}</Text>
+          <Text style={[styles.name, { color: colors.textSecondary }]}>{coin.name}</Text>
         </View>
       </View>
 
@@ -58,7 +71,7 @@ export const CoinRowItem: React.FC<CoinRowItemProps> = ({ coin, onPress }) => {
               <Bell size={11} color={colors.primary} />
             </View>
           )}
-          <Text style={styles.price}>
+          <Text style={[styles.price, { color: colors.textPrimary }]}>
             ${coin.priceUsd < 1
               ? coin.priceUsd.toFixed(2)
               : coin.priceUsd.toLocaleString('tr-TR', { maximumFractionDigits: 2 })}
@@ -74,6 +87,24 @@ export const CoinRowItem: React.FC<CoinRowItemProps> = ({ coin, onPress }) => {
           {isPositive ? `+${coin.change24h.toFixed(2)}%` : `${coin.change24h.toFixed(2)}%`}
         </Text>
       </View>
+
+      {/* Takip Listesi Yıldız Aksiyonu */}
+      {showWatchlistAction && (
+        <Pressable
+          style={styles.starAction}
+          onPress={(e) => {
+            e.stopPropagation?.();
+            onToggleWatchlist?.(coin.symbol);
+          }}
+          hitSlop={12}
+        >
+          <Star
+            size={18}
+            color={coin.isWatchlisted ? colors.warning : colors.textMuted}
+            fill={coin.isWatchlisted ? colors.warning : 'transparent'}
+          />
+        </Pressable>
+      )}
     </Pressable>
   );
 };
@@ -116,12 +147,12 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   signalCol: {
-    flex: 1.5,
+    flex: 1.4,
     alignItems: 'center',
     justifyContent: 'center',
   },
   priceCol: {
-    flex: 2,
+    flex: 1.8,
     alignItems: 'flex-end',
   },
   priceHeaderRow: {
@@ -145,5 +176,11 @@ const styles = StyleSheet.create({
   },
   textNegative: {
     color: colors.danger,
+  },
+  starAction: {
+    marginLeft: spacing.sm,
+    padding: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

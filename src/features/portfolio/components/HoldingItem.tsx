@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { HoldingDto } from '../../../services/api/types';
 import { colors, typography, spacing, borderRadius } from '../../../shared/theme';
+import { useTheme } from '../../../context/ThemeContext';
 
 interface HoldingItemProps {
   holding: HoldingDto;
@@ -9,26 +10,31 @@ interface HoldingItemProps {
 }
 
 export const HoldingItem: React.FC<HoldingItemProps> = ({ holding, onPress }) => {
+  const { colors } = useTheme();
   const isPositive = holding.changeUsd > 0;
   const isNegative = holding.changeUsd < 0;
 
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.card,
+        { backgroundColor: colors.card, borderColor: colors.border },
+        pressed && styles.pressed,
+      ]}
     >
       <View style={styles.leftRow}>
         <View style={[styles.iconCircle, { backgroundColor: holding.color }]}>
           <Text style={styles.iconLetter}>{holding.iconLetter}</Text>
         </View>
         <View>
-          <Text style={styles.symbol}>{holding.symbol}</Text>
-          <Text style={styles.name}>{holding.name}</Text>
+          <Text style={[styles.symbol, { color: colors.textPrimary }]}>{holding.symbol}</Text>
+          <Text style={[styles.name, { color: colors.textSecondary }]}>{holding.name}</Text>
         </View>
       </View>
 
       <View style={styles.rightColumn}>
-        <Text style={styles.value}>
+        <Text style={[styles.value, { color: colors.textPrimary }]}>
           ${holding.valueUsd.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
         </Text>
         {holding.isCash ? (

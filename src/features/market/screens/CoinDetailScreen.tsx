@@ -10,8 +10,9 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Plus } from 'lucide-react-native';
 import { colors, typography, spacing, borderRadius } from '../../../shared/theme';
-import { Header, Card, Button } from '../../../shared/components';
+import { Header, Card } from '../../../shared/components';
 import { useApp } from '../../../context/AppContext';
+import { useTheme } from '../../../context/ThemeContext';
 import { CoinChartSection } from '../components/CoinChartSection';
 import { QuickTradeModal } from '../components/QuickTradeModal';
 import { RootStackParamList } from '../../../navigation/navigation.types';
@@ -23,6 +24,7 @@ export const CoinDetailScreen: React.FC = () => {
   const navigation = useNavigation<DetailNavProp>();
   const route = useRoute<DetailRouteProp>();
   const { coins } = useApp();
+  const { colors, isDark } = useTheme();
 
   const symbol = route.params?.symbol || 'BTC';
   const coin = coins.find((c) => c.symbol === symbol) || coins[0];
@@ -37,7 +39,7 @@ export const CoinDetailScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { backgroundColor: colors.background }]}>
       <Header
         showBack
         onBackPress={() => navigation.goBack()}
@@ -46,14 +48,14 @@ export const CoinDetailScreen: React.FC = () => {
             <View style={[styles.coinCircle, { backgroundColor: coin.color }]}>
               <Text style={styles.coinCircleText}>{coin.iconLetter}</Text>
             </View>
-            <Text style={styles.headerTitleText}>
+            <Text style={[styles.headerTitleText, { color: colors.textPrimary }]}>
               {coin.name} ({coin.symbol})
             </Text>
           </View>
         }
         rightAction={
           <Pressable
-            style={styles.addAlarmButton}
+            style={[styles.addAlarmButton, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}
             onPress={() => navigation.navigate('NewAlarm', { symbol: coin.symbol })}
           >
             <Plus size={20} color={colors.textPrimary} />
@@ -65,7 +67,7 @@ export const CoinDetailScreen: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.heroPrice}>
+        <Text style={[styles.heroPrice, { color: colors.textPrimary }]}>
           ${coin.priceUsd.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
         </Text>
 
@@ -76,19 +78,19 @@ export const CoinDetailScreen: React.FC = () => {
             </Text>
           </View>
           <Text style={styles.diffText}>+ $420.12</Text>
-          <Text style={styles.periodText}>Bugün</Text>
+          <Text style={[styles.periodText, { color: colors.textMuted }]}>Bugün</Text>
         </View>
 
         <CoinChartSection currentPrice={coin.priceUsd > 1000 ? coin.priceUsd.toFixed(0) : coin.priceUsd.toFixed(2)} />
 
-        <View style={styles.timeframeRow}>
+        <View style={[styles.timeframeRow, { backgroundColor: isDark ? '#10151E' : '#E2E8F0' }]}>
           {(['1S', '24S', '1H', '1A', 'YTD'] as const).map((tf) => (
             <Pressable
               key={tf}
-              style={[styles.tfButton, timeframe === tf && styles.tfButtonActive]}
+              style={[styles.tfButton, timeframe === tf && [styles.tfButtonActive, { backgroundColor: colors.card }]]}
               onPress={() => setTimeframe(tf)}
             >
-              <Text style={[styles.tfText, timeframe === tf && styles.tfTextActive]}>
+              <Text style={[styles.tfText, timeframe === tf ? { color: colors.textPrimary } : { color: colors.textMuted }]}>
                 {tf}
               </Text>
             </Pressable>
@@ -97,19 +99,19 @@ export const CoinDetailScreen: React.FC = () => {
 
         <View style={styles.statsGrid}>
           <Card style={styles.statCard}>
-            <Text style={styles.statLabel}>24s Yüksek</Text>
-            <Text style={styles.statValue}>${coin.high24h.toLocaleString('tr-TR')}</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>24s Yüksek</Text>
+            <Text style={[styles.statValue, { color: colors.textPrimary }]}>${coin.high24h.toLocaleString('tr-TR')}</Text>
           </Card>
           <Card style={styles.statCard}>
-            <Text style={styles.statLabel}>24s Düşük</Text>
-            <Text style={styles.statValue}>${coin.low24h.toLocaleString('tr-TR')}</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>24s Düşük</Text>
+            <Text style={[styles.statValue, { color: colors.textPrimary }]}>${coin.low24h.toLocaleString('tr-TR')}</Text>
           </Card>
           <Card style={styles.statCard}>
-            <Text style={styles.statLabel}>Hacim ({coin.symbol})</Text>
-            <Text style={styles.statValue}>{coin.volumeBtc}</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Hacim ({coin.symbol})</Text>
+            <Text style={[styles.statValue, { color: colors.textPrimary }]}>{coin.volumeBtc}</Text>
           </Card>
           <Card style={styles.statCard}>
-            <Text style={styles.statLabel}>Teknik: RSI(14)</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Teknik: RSI(14)</Text>
             <Text style={[styles.statValue, { color: colors.primary }]}>
               {coin.rsi} (Nötr-AI)
             </Text>
@@ -118,7 +120,7 @@ export const CoinDetailScreen: React.FC = () => {
 
         <Card variant="active" style={styles.aiEngineCard}>
           <View style={styles.aiHeader}>
-            <Text style={styles.aiTitle}>AI Karar Motoru (LSTM+XGBoost)</Text>
+            <Text style={[styles.aiTitle, { color: colors.primary }]}>AI Karar Motoru (LSTM+XGBoost)</Text>
             <Text style={styles.aiConfidence}>%{coin.aiConfidencePercent} Güven</Text>
           </View>
 
@@ -126,24 +128,26 @@ export const CoinDetailScreen: React.FC = () => {
             <View style={[styles.progressBar, { width: `${coin.aiConfidencePercent}%` }]} />
           </View>
 
-          <Text style={styles.aiRationale}>{coin.aiAnalysisText}</Text>
+          <Text style={[styles.aiRationale, { color: isDark ? '#AFC1D6' : '#475569' }]}>
+            {coin.aiAnalysisText}
+          </Text>
         </Card>
       </ScrollView>
 
-      {/* Alt Sabit AL / SAT Buton Çubuğu */}
-      <View style={styles.bottomBar}>
-        <Button
-          title="SAT"
-          variant="danger"
-          style={styles.halfBtn}
+      {/* Alt Sabit AL / SAT Buton Çubuğu (Figma Frame-4) */}
+      <View style={[styles.bottomBar, { backgroundColor: isDark ? '#090D14' : colors.card, borderTopColor: colors.border }]}>
+        <Pressable
+          style={[styles.tradeBtn, styles.satBtn]}
           onPress={() => handleOpenTrade('SELL')}
-        />
-        <Button
-          title="AL"
-          variant="success"
-          style={styles.halfBtn}
+        >
+          <Text style={styles.satBtnText}>SAT</Text>
+        </Pressable>
+        <Pressable
+          style={[styles.tradeBtn, styles.alBtn]}
           onPress={() => handleOpenTrade('BUY')}
-        />
+        >
+          <Text style={styles.alBtnText}>AL</Text>
+        </Pressable>
       </View>
 
       <QuickTradeModal
@@ -243,9 +247,6 @@ const styles = StyleSheet.create({
     ...typography.captionBold,
     color: colors.textMuted,
   },
-  tfTextActive: {
-    color: colors.textPrimary,
-  },
   statsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -299,7 +300,6 @@ const styles = StyleSheet.create({
   },
   aiRationale: {
     ...typography.body,
-    color: '#AFC1D6',
     lineHeight: 20,
     marginTop: spacing.xs,
   },
@@ -308,17 +308,38 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: colors.background,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
     paddingHorizontal: spacing.screenPadding,
     paddingTop: spacing.md,
     paddingBottom: 22,
     flexDirection: 'row',
     gap: spacing.md,
     zIndex: 100,
+    elevation: 20,
   },
-  halfBtn: {
+  tradeBtn: {
     flex: 1,
+    height: 54,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  satBtn: {
+    backgroundColor: colors.danger,
+  },
+  satBtnText: {
+    color: '#FFFFFF',
+    fontSize: 17,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  alBtn: {
+    backgroundColor: colors.success,
+  },
+  alBtnText: {
+    color: '#062816',
+    fontSize: 17,
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
 });
