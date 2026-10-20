@@ -109,3 +109,16 @@ export interface BacktestResultDto {
   equityCurve: number[];
 }
 
+// Bildirim Merkezi Tipleri
+export type NotificationType = 'AI_SIGNAL' | 'PRICE_ALERT' | 'AUTOPILOT_TRADE' | 'SECURITY';
+
+export interface NotificationDto {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  time: string;
+  isRead: boolean;
+  relatedSymbol?: string;
+}
+

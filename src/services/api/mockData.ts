@@ -3,6 +3,7 @@ import {
   PortfolioSummaryDto,
   CoinMarketDto,
   AutopilotStatusDto,
+  NotificationDto,
 } from './types';
 
 export const mockUser: UserDto = {
@@ -170,3 +171,50 @@ export const mockAutopilotStatus: AutopilotStatusDto = {
     },
   ],
 };
+
+export const mockNotifications: NotificationDto[] = [
+  {
+    id: 'notif_1',
+    type: 'AI_SIGNAL',
+    title: 'Yeni AI Sinyali: BTC/USDT',
+    message: 'Hibrit model %87 güven oranı ile "GÜÇLÜ AL" sinyali üretti. Hedef: $69.200.',
+    time: '12 dk önce',
+    isRead: false,
+    relatedSymbol: 'BTC',
+  },
+  {
+    id: 'notif_2',
+    type: 'AUTOPILOT_TRADE',
+    title: 'Otopilot Kâr Satışı Gerçekleşti',
+    message: 'ETH pozisyonunuz hedef fiyattan satıldı. Gerçekleşen Kâr: +$45.20.',
+    time: '45 dk önce',
+    isRead: false,
+    relatedSymbol: 'ETH',
+  },
+  {
+    id: 'notif_3',
+    type: 'PRICE_ALERT',
+    title: 'Fiyat Eşiği Aşıldı: SOL',
+    message: 'SOL/USDT belirlediğiniz $108.00 eşik seviyesini yukarı yönlü kırdı.',
+    time: '2 saat önce',
+    isRead: true,
+    relatedSymbol: 'SOL',
+  },
+  {
+    id: 'notif_4',
+    type: 'SECURITY',
+    title: 'Oturum Süresi Güncellendi',
+    message: 'Oturumunuz 30 gün uzatıldı. Bir sonraki bitiş tarihi: 19 Kasım 2026.',
+    time: 'Dün',
+    isRead: true,
+  },
+  {
+    id: 'notif_5',
+    type: 'AI_SIGNAL',
+    title: 'Haftalık Otopilot Değerlendirmesi',
+    message: 'Geçtiğimiz 7 günde 18 işlem tamamlandı, başarı oranı %79.4 olarak ölçüldü.',
+    time: '3 gün önce',
+    isRead: true,
+  },
+];
+

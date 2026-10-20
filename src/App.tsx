@@ -4,6 +4,7 @@ import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-c
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { AppProvider } from './context/AppContext';
+import { NotificationProvider } from './context/NotificationContext';
 import { RootNavigator } from './navigation/RootNavigator';
 import { colors } from './shared/theme';
 
@@ -75,7 +76,9 @@ export default function App() {
         <ThemeProvider>
           <AuthProvider>
             <AppProvider>
-              <ThemedAppContent />
+              <NotificationProvider>
+                <ThemedAppContent />
+              </NotificationProvider>
             </AppProvider>
           </AuthProvider>
         </ThemeProvider>
