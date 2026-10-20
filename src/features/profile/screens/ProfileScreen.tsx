@@ -1,17 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Bell } from 'lucide-react-native';
 import { typography, spacing, borderRadius } from '../../../shared/theme';
 import { Card, Toggle } from '../../../shared/components';
 import { useAuth } from '../../../context/AuthContext';
 import { useTheme } from '../../../context/ThemeContext';
+import { useNotifications } from '../../../context/NotificationContext';
 import { UserProfileCard } from '../components/UserProfileCard';
 import { SecuritySettingsCard } from '../components/SecuritySettingsCard';
 import { FinancialAndAiMenuCards } from '../components/FinancialAndAiMenuCards';
+import { NotificationsModal } from '../../portfolio/components/NotificationsModal';
 
 export const ProfileScreen: React.FC = () => {
   const { logout } = useAuth();
   const { isDark, toggleTheme, colors } = useTheme();
+  const { unreadCount } = useNotifications();
+  const [notificationsVisible, setNotificationsVisible] = useState(false);
 
   return (
     <View style={[styles.screen, { backgroundColor: colors.background }]}>
@@ -23,8 +27,13 @@ export const ProfileScreen: React.FC = () => {
             styles.bellButton,
             { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 },
           ]}
+          onPress={() => setNotificationsVisible(true)}
+          hitSlop={8}
         >
-          <Bell size={20} color={colors.textPrimary} strokeWidth={2} />
+          <Bell size={20} color={colors.textPrimary} strokeWidth={2.2} />
+          {unreadCount > 0 && (
+            <View style={[styles.unreadDot, { backgroundColor: colors.primary }]} />
+          )}
         </Pressable>
       </View>
 
@@ -70,6 +79,12 @@ export const ProfileScreen: React.FC = () => {
           <Text style={styles.logoutText}>Güvenli Çıkış Yap</Text>
         </Pressable>
       </ScrollView>
+
+      {/* Bildirim Merkezi Modalı */}
+      <NotificationsModal
+        visible={notificationsVisible}
+        onClose={() => setNotificationsVisible(false)}
+      />
     </View>
   );
 };
@@ -94,6 +109,17 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.full,
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative',
+  },
+  unreadDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    borderWidth: 1.5,
+    borderColor: '#FFFFFF',
   },
   scrollContent: {
     paddingHorizontal: spacing.screenPadding,
