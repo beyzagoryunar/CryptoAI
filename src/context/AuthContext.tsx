@@ -23,6 +23,7 @@ interface AuthContextType {
   sessionExpiryDate: string;
   login: (email: string, pass: string) => Promise<void>;
   register: (fName: string, lName: string, email: string, pass: string) => Promise<void>;
+  updateUserProfile: (fName: string, lName: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshSession: () => Promise<void>;
 }
@@ -109,6 +110,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updateUserProfile = async (fName: string, lName: string) => {
+    if (user) {
+      const updatedUser: UserDto = {
+        ...user,
+        firstName: fName.trim(),
+        lastName: lName.trim(),
+      };
+      await saveSession(updatedUser, token || 'jwt_mock_token', sessionExpiresAt);
+    }
+  };
+
   const logout = async () => {
     setUser(null);
     setToken(null);
@@ -133,6 +145,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         sessionExpiryDate: formattedExpiryDate,
         login,
         register,
+        updateUserProfile,
         logout,
         refreshSession,
       }}

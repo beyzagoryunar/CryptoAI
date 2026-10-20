@@ -1,38 +1,30 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-} from 'react-native';
-import { Bell, ChevronRight, Check } from 'lucide-react-native';
-import { colors, typography, spacing, borderRadius } from '../../../shared/theme';
-import { Card, Toggle, Button } from '../../../shared/components';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { Bell } from 'lucide-react-native';
+import { typography, spacing, borderRadius } from '../../../shared/theme';
+import { Card, Toggle } from '../../../shared/components';
 import { useAuth } from '../../../context/AuthContext';
 import { useTheme } from '../../../context/ThemeContext';
+import { UserProfileCard } from '../components/UserProfileCard';
+import { SecuritySettingsCard } from '../components/SecuritySettingsCard';
+import { FinancialAndAiMenuCards } from '../components/FinancialAndAiMenuCards';
 
 export const ProfileScreen: React.FC = () => {
-  const { user, logout, sessionDaysRemaining, sessionExpiryDate, refreshSession } = useAuth();
+  const { logout } = useAuth();
   const { isDark, toggleTheme, colors } = useTheme();
-
-  const [autopilotPermission, setAutopilotPermission] = useState(true);
-  const [faceIdEnabled, setFaceIdEnabled] = useState(true);
-  const [sessionRefreshed, setSessionRefreshed] = useState(false);
-
-  const handleRefreshSession = async () => {
-    await refreshSession();
-    setSessionRefreshed(true);
-    setTimeout(() => setSessionRefreshed(false), 2500);
-  };
 
   return (
     <View style={[styles.screen, { backgroundColor: colors.background }]}>
       {/* Üst Başlık */}
       <View style={styles.header}>
         <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Hesabım</Text>
-        <Pressable style={[styles.bellButton, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}>
-          <Bell size={20} color={colors.textPrimary} />
+        <Pressable
+          style={[
+            styles.bellButton,
+            { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 },
+          ]}
+        >
+          <Bell size={20} color={colors.textPrimary} strokeWidth={2} />
         </Pressable>
       </View>
 
@@ -40,83 +32,22 @@ export const ProfileScreen: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Kullanıcı Profil Kartı */}
-        <Card style={styles.profileCard}>
-          <View style={styles.profileRow}>
-            <View style={[styles.avatarCircle, { backgroundColor: isDark ? '#1C2738' : '#E0F2FE' }]}>
-              <Text style={styles.avatarText}>BG</Text>
-            </View>
+        {/* Kullanıcı Profil Kartı (Ad/Soyad Düzenleme Modallı) */}
+        <UserProfileCard />
 
-            <View style={styles.profileInfo}>
-              <Text style={[styles.nameText, { color: colors.textPrimary }]}>
-                {user ? `${user.firstName} ${user.lastName}` : 'Beyza Göryunar'}
-              </Text>
-              <Text style={[styles.uidText, { color: colors.textSecondary }]}>
-                UID: {user?.uid || '231002035'}
-              </Text>
-
-              <View style={styles.verifiedBadge}>
-                <Check size={12} color={colors.success} />
-                <Text style={styles.verifiedText}>E-posta Doğrulandı</Text>
-              </View>
-            </View>
-          </View>
-        </Card>
-
-        {/* Bölüm: FİNANSAL İŞLEMLER */}
-        <Text style={[styles.sectionHeader, { color: colors.textMuted }]}>FİNANSAL İŞLEMLER</Text>
-        <Card style={styles.menuCard}>
-          <Pressable style={styles.menuRow}>
-            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>Banka Hesaplarım</Text>
-            <View style={styles.menuValueRow}>
-              <Text style={[styles.menuValue, { color: colors.textSecondary }]}>2 Kayıtlı</Text>
-              <ChevronRight size={16} color={colors.textSecondary} />
-            </View>
-          </Pressable>
-
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
-
-          <Pressable style={styles.menuRow}>
-            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>Komisyon Oranları</Text>
-            <View style={styles.menuValueRow}>
-              <Text style={[styles.menuValue, { color: colors.success }]}>
-                %0.08
-              </Text>
-              <ChevronRight size={16} color={colors.textSecondary} />
-            </View>
-          </Pressable>
-        </Card>
-
-        {/* Bölüm: YAPAY ZEKA VE OTOPİLOT */}
-        <Text style={[styles.sectionHeader, { color: colors.textMuted }]}>YAPAY ZEKA VE OTOPİLOT</Text>
-        <Card style={styles.menuCard}>
-          <Pressable style={styles.menuRow}>
-            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>AI Risk Profili</Text>
-            <View style={styles.menuValueRow}>
-              <Text style={[styles.menuValue, { color: colors.primary }]}>
-                Dengeli
-              </Text>
-              <ChevronRight size={16} color={colors.textSecondary} />
-            </View>
-          </Pressable>
-
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
-
-          <View style={styles.menuRow}>
-            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>Otopilot İşlem İzni</Text>
-            <Toggle
-              value={autopilotPermission}
-              onValueChange={setAutopilotPermission}
-            />
-          </View>
-        </Card>
+        {/* Finansal İşlemler ve AI Otopilot Menü Kartları */}
+        <FinancialAndAiMenuCards />
 
         {/* Bölüm: GÖRÜNÜM VE TEMA */}
-        <Text style={[styles.sectionHeader, { color: colors.textMuted }]}>GÖRÜNÜM VE TEMA</Text>
-        <Card style={styles.menuCard}>
+        <Text style={[styles.sectionHeader, { color: colors.textMuted }]}>
+          GÖRÜNÜM VE TEMA
+        </Text>
+        <Card style={[styles.menuCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <View style={styles.menuRow}>
             <View>
-              <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>Karanlık Mod (Dark Theme)</Text>
+              <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>
+                Karanlık Mod (Dark Theme)
+              </Text>
               <Text style={[styles.subLabelText, { color: colors.textMuted }]}>
                 {isDark ? 'Karanlık tema aktif' : 'Açık tema aktif'}
               </Text>
@@ -125,42 +56,11 @@ export const ProfileScreen: React.FC = () => {
           </View>
         </Card>
 
-        {/* Bölüm: GÜVENLİK */}
-        <Text style={[styles.sectionHeader, { color: colors.textMuted }]}>GÜVENLİK VE OTURUM</Text>
-        <Card style={styles.menuCard}>
-          <Pressable style={styles.menuRow} onPress={handleRefreshSession}>
-            <View>
-              <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>Oturum Süresi (Beni Hatırla)</Text>
-              <Text style={[styles.subLabelText, { color: colors.textMuted }]}>
-                Bitiş: {sessionExpiryDate} ({sessionDaysRemaining} gün kaldı)
-              </Text>
-            </View>
-            <View style={styles.menuValueRow}>
-              <Text style={[styles.menuValue, { color: sessionRefreshed ? colors.success : colors.primary }]}>
-                {sessionRefreshed ? '✓ 30 Gün Uzatıldı' : '+30 Gün Uzat'}
-              </Text>
-            </View>
-          </Pressable>
-
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
-
-          <Pressable style={styles.menuRow}>
-            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>Google Authenticator (2FA)</Text>
-            <View style={styles.menuValueRow}>
-              <Text style={[styles.menuValue, { color: colors.success }]}>
-                Açık
-              </Text>
-              <ChevronRight size={16} color={colors.textSecondary} />
-            </View>
-          </Pressable>
-
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
-
-          <View style={styles.menuRow}>
-            <Text style={[styles.menuLabel, { color: colors.textPrimary }]}>FaceID ile Giriş</Text>
-            <Toggle value={faceIdEnabled} onValueChange={setFaceIdEnabled} />
-          </View>
-        </Card>
+        {/* Bölüm: GÜVENLİK VE OTURUM */}
+        <Text style={[styles.sectionHeader, { color: colors.textMuted }]}>
+          GÜVENLİK VE OTURUM
+        </Text>
+        <SecuritySettingsCard />
 
         {/* Çıkış Yap Butonu */}
         <Pressable
@@ -177,7 +77,6 @@ export const ProfileScreen: React.FC = () => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
@@ -188,13 +87,11 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     ...typography.h2,
-    color: colors.textPrimary,
   },
   bellButton: {
     width: 38,
     height: 38,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.card,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -202,108 +99,39 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.screenPadding,
     paddingBottom: spacing.xxl,
   },
-  profileCard: {
-    padding: spacing.lg,
-    marginBottom: spacing.lg,
-  },
-  profileRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  avatarCircle: {
-    width: 54,
-    height: 54,
-    borderRadius: borderRadius.full,
-    backgroundColor: '#1C2738',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: spacing.md,
-  },
-  avatarText: {
-    ...typography.h3,
-    color: colors.primary,
-  },
-  profileInfo: {
-    flex: 1,
-  },
-  nameText: {
-    ...typography.bodyBold,
-    color: colors.textPrimary,
-    fontSize: 16,
-  },
-  uidText: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  verifiedBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(0, 230, 118, 0.12)',
-    alignSelf: 'flex-start',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: borderRadius.pill,
-    marginTop: 6,
-  },
-  verifiedText: {
-    ...typography.micro,
-    color: colors.success,
-  },
   sectionHeader: {
     ...typography.micro,
-    color: colors.textMuted,
-    marginBottom: spacing.xs + 2,
-    marginTop: spacing.sm,
+    marginBottom: spacing.xs,
+    marginLeft: 2,
   },
   menuCard: {
-    padding: 0,
-    marginBottom: spacing.md,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
   },
   menuRow: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    padding: spacing.md,
+    alignItems: 'center',
+    paddingVertical: spacing.xs,
   },
   menuLabel: {
-    ...typography.bodyMedium,
-    color: colors.textPrimary,
-  },
-  menuValueRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  menuValue: {
-    ...typography.captionBold,
-    color: colors.textSecondary,
+    ...typography.bodyBold,
   },
   subLabelText: {
     ...typography.micro,
-    color: colors.textMuted,
     marginTop: 2,
   },
-  divider: {
-    height: 1,
-    backgroundColor: '#18202E',
-    marginHorizontal: spacing.md,
-  },
   logoutButton: {
-    backgroundColor: colors.card,
-    borderRadius: borderRadius.lg,
-    paddingVertical: spacing.md + 2,
+    height: 50,
+    borderRadius: borderRadius.pill,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: spacing.md,
-    marginBottom: spacing.xl,
-    borderWidth: 1,
-    borderColor: '#242D3D',
+    marginTop: spacing.sm,
+    marginBottom: spacing.xxl,
   },
   logoutText: {
     ...typography.bodyBold,
-    color: colors.danger,
-    fontSize: 15,
+    color: '#FF3B30',
   },
 });

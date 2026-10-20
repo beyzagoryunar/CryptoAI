@@ -30,7 +30,7 @@ export default defineConfig({
     alias: [
       {
         find: /^react-native-svg$/,
-        replacement: path.resolve(__dirname, './node_modules/react-native-svg/lib/module/ReactNativeSVG.web.js'),
+        replacement: path.resolve(__dirname, './node_modules/react-native-svg/lib/module/elements.web.js'),
       },
       {
         find: /react-native-svg\/lib\/module\/lib\/resolve/,
