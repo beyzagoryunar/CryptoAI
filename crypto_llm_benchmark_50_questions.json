@@ -1,0 +1,302 @@
+[
+  {
+    "id": 1,
+    "category": "Kripto & Makro Analitik",
+    "question": "Bitcoin RSI göstergesi 85 seviyesindeyse bu teknik olarak ne anlama gelir?",
+    "ground_truth": "Aşırı alım (overbought) bölgesindedir, fiyatta bir düzeltme veya geri çekilme riski yüksektir."
+  },
+  {
+    "id": 2,
+    "category": "Kripto & Makro Analitik",
+    "question": "MACD çizgisi sinyal çizgisini yukarı yönlü kestiğinde hangi al-sat sinyali üretilir?",
+    "ground_truth": "Boğa (Bullish) / Alım sinyali (Golden Cross benzeri momentum artışı)."
+  },
+  {
+    "id": 3,
+    "category": "Kripto & Makro Analitik",
+    "question": "Korku ve Açgözlülük Endeksi 12 değerini gösteriyorsa piyasa psikolojisi nedir?",
+    "ground_truth": "Aşırı Korku (Extreme Fear). Genellikle piyasada panik satışı olduğunu ve potansiyel dip seviyeleri gösterir."
+  },
+  {
+    "id": 4,
+    "category": "Kripto & Makro Analitik",
+    "question": "Bitcoin ile S&P 500 endeksi arasındaki korelasyon katsayısı +0.75 ise bu ne ifade eder?",
+    "ground_truth": "Kuvvetli pozitif korelasyon. Geleneksel hisse senedi piyasası yükseldiğinde Bitcoin'in de genel olarak yükselme eğiliminde olduğunu gösterir."
+  },
+  {
+    "id": 5,
+    "category": "Kripto & Makro Analitik",
+    "question": "Vadeli işlemlerde Fonlama Oranı (Funding Rate) aşırı pozitif olduğunda hangi taraf kime ödeme yapar?",
+    "ground_truth": "Long (uzun/yükseliş) pozisyon açanlar, Short (kısa/düşüş) pozisyon açanlara fonlama ücreti öder."
+  },
+  {
+    "id": 6,
+    "category": "Kripto & Makro Analitik",
+    "question": "Bitcoin işlem hacminde ani bir patlama ile birlikte fiyat direnci kırarsa bu ne anlama gelir?",
+    "ground_truth": "Hacimli kırılım (volume breakout); kırılımın güvenilir olduğunu ve yükseliş trendinin güç kazandığını gösterir."
+  },
+  {
+    "id": 7,
+    "category": "Kripto & Makro Analitik",
+    "question": "Bollinger Bantları aşırı derecede daraldığında (Squeeze) teknik olarak ne beklenir?",
+    "ground_truth": "Volatilitenin çok yakında sert bir şekilde patlayacağı ve fiyatta güçlü bir yöne doğru kırılım olacağı beklenir."
+  },
+  {
+    "id": 8,
+    "category": "Kripto & Makro Analitik",
+    "question": "Kaldıraçlı bir işlemde Likidasyon Fiyatı neyi ifade eder?",
+    "ground_truth": "Teminatın (margin) pozisyon zararını karşılayamaz hale geldiği ve borsanın pozisyonu zorla kapattığı fiyat seviyesidir."
+  },
+  {
+    "id": 9,
+    "category": "Kripto & Makro Analitik",
+    "question": "Ethereum fiyatının Bitcoin karşısındaki değerini ölçen parite hangisidir?",
+    "ground_truth": "ETH/BTC paritesidir."
+  },
+  {
+    "id": 10,
+    "category": "Kripto & Makro Analitik",
+    "question": "Dolar Endeksi (DXY) sert yükseldiğinde kripto varlıklar genellikle nasıl tepki verir?",
+    "ground_truth": "Genellikle ters korelasyon göstererek değer kaybeder veya satış baskısı altına girer."
+  },
+  {
+    "id": 11,
+    "category": "Kripto & Makro Analitik",
+    "question": "Ayı Uyumsuzluğu (Bearish Divergence) RSI ile fiyat arasında nasıl oluşur?",
+    "ground_truth": "Fiyat daha yüksek tepeler yaparken, RSI göstergesinin daha düşük tepeler yapmasıyla oluşur; trend dönüşü sinyalidir."
+  },
+  {
+    "id": 12,
+    "category": "Kripto & Makro Analitik",
+    "question": "Kripto para piyasasında 'Order Book' (Emir Defteri) neyi gösterir?",
+    "ground_truth": "Alıcıların ve satıcıların belirledikleri fiyat ve miktarlardaki açık limit emirlerinin listesini."
+  },
+  {
+    "id": 13,
+    "category": "Kripto & Makro Analitik",
+    "question": "Volatilite (24h Volatility) metriği yüksek olan bir kripto parayla işlem yaparken risk nasıl yönetilmelidir?",
+    "ground_truth": "Pozisyon büyüklüğü küçültülmeli, stop-loss aralığı genişletilmeli veya kaldıraç düşürülmelidir."
+  },
+  {
+    "id": 14,
+    "category": "Kripto & Makro Analitik",
+    "question": "Stablecoin'lerin (USDT, USDC) piyasa değerinin hızla artması kripto piyasası için ne anlama gelir?",
+    "ground_truth": "Piyasaya taze nakit girişi olduğunu veya yatırımcıların alım yapmak üzere kenarda likidite biriktirdiğini gösterir."
+  },
+  {
+    "id": 15,
+    "category": "Kripto & Makro Analitik",
+    "question": "SMA 50 ile SMA 200 kesişiminde 'Golden Cross' nedir?",
+    "ground_truth": "50 günlük kısa vadeli hareketli ortalamanın, 200 günlük uzun vadeli ortalamayı yukarı yönlü keserek uzun vadeli boğa trendini başlatmasıdır."
+  },
+  {
+    "id": 16,
+    "category": "Teknik Analiz & Trading",
+    "question": "Stop-Loss (Zarar Durdur) emri kullanmanın bir yatırımcı için temel faydası nedir?",
+    "ground_truth": "Beklenmeyen piyasa çöküşlerinde anaparanın tamamının erimesini engelleyerek riski önceden belirlenen sınırlı bir miktarla sınırlamasıdır."
+  },
+  {
+    "id": 17,
+    "category": "Teknik Analiz & Trading",
+    "question": "Risk-Ödül Oranı (Risk-to-Reward Ratio) 1:3 olan bir işlemde 100$ risk eden yatırımcı ne kadar kâr hedefler?",
+    "ground_truth": "300$ kâr hedefler."
+  },
+  {
+    "id": 18,
+    "category": "Teknik Analiz & Trading",
+    "question": "Fibonacci Düzeltmesinde 'Altın Oran' kabul edilen en kritik geri çekilme seviyesi hangisidir?",
+    "ground_truth": "%61.8 (0.618) seviyesidir."
+  },
+  {
+    "id": 19,
+    "category": "Teknik Analiz & Trading",
+    "question": "Destek seviyesi aşağı yönlü kırıldığında (Breakdown) teknik analizde bu seviye neye dönüşür?",
+    "ground_truth": "Yeni bir direnç (resistance) seviyesine dönüşür."
+  },
+  {
+    "id": 20,
+    "category": "Teknik Analiz & Trading",
+    "question": "İkili Dip (Double Bottom / 'W' Formasyonu) teknik analizde hangi yönde trend değişimi öngörür?",
+    "ground_truth": "Düşüş trendinin sona erip yükseliş (boğa) trendinin başlayacağını öngörür."
+  },
+  {
+    "id": 21,
+    "category": "Teknik Analiz & Trading",
+    "question": "Omuz Baş Omuz (Head and Shoulders) formasyonu hangi trendin tepesinde görülür?",
+    "ground_truth": "Yükseliş trendinin tepesinde görülür ve aşağı yönlü düşüş (ayı) dönüş sinyalidir."
+  },
+  {
+    "id": 22,
+    "category": "Teknik Analiz & Trading",
+    "question": "Trailing Stop-Loss (İz süren stop) emrinin standart stop-loss emrinden farkı nedir?",
+    "ground_truth": "Fiyat kâr yönünde ilerledikçe stop seviyesini otomatik olarak yukarı taşır ve kârı kilitler."
+  },
+  {
+    "id": 23,
+    "category": "Teknik Analiz & Trading",
+    "question": "Kripto piyasasında 'Slippage' (Fiyat Kayması) ne zaman oluşur?",
+    "ground_truth": "Piyasa likiditesinin düşük olduğu veya aşırı hızlı hareket ettiği durumlarda emrin hedeflenen fiyattan farklı bir fiyattan gerçekleşmesiyle oluşur."
+  },
+  {
+    "id": 24,
+    "category": "Teknik Analiz & Trading",
+    "question": "DCA (Dollar Cost Averaging - Dolar Maliyet Ortalaması) stratejisi nasıl uygulanır?",
+    "ground_truth": "Fiyat dalgalanmalarına bakılmaksızın belirli aralıklarla (örn. her hafta) sabit miktarda alım yaparak ortalama maliyeti düşürme stratejisidir."
+  },
+  {
+    "id": 25,
+    "category": "Teknik Analiz & Trading",
+    "question": "Göreceli Hacim (Relative Volume - RVOL) göstergesi 3'ün üzerindeyse bu neye işaret eder?",
+    "ground_truth": "Hacmin normalin 3 katı olduğunu, kurumsal veya büyük bir piyasa ilgisinin mevcut olduğunu gösterir."
+  },
+  {
+    "id": 26,
+    "category": "Teknik Analiz & Trading",
+    "question": "Boğa Bayrağı (Bull Flag) formasyonu ne tür bir formasyondur?",
+    "ground_truth": "Bir trend devam (continuation) formasyonudur; güçlü bir yükseliş direğinin ardından gelen hafif geri çekilme sonrası yükselişin devamını öngörür."
+  },
+  {
+    "id": 27,
+    "category": "Teknik Analiz & Trading",
+    "question": "Bir portföyde 'Maksimum Düşüş' (Maximum Drawdown - MDD) neyi ölçer?",
+    "ground_truth": "Portföyün tepe değerinden gördüğü en dip noktaya kadar yaşadığı en büyük sermaye kaybı yüzdesini ölçer."
+  },
+  {
+    "id": 28,
+    "category": "Teknik Analiz & Trading",
+    "question": "Market Maker (Piyasa Yapıcı) ile Market Taker (Piyasa Alıcı) arasındaki fark nedir?",
+    "ground_truth": "Maker limit emirle deftere likidite ekler; Taker ise piyasa emriyle var olan likiditeyi tüketir."
+  },
+  {
+    "id": 29,
+    "category": "Teknik Analiz & Trading",
+    "question": "ATR (Average True Range) göstergesi yüksek çıktığında piyasa hakkında ne söylenebilir?",
+    "ground_truth": "Piyasadaki oynaklığın (volatilitenin) ve mum boylarının çok geniş olduğu söylenebilir."
+  },
+  {
+    "id": 30,
+    "category": "Teknik Analiz & Trading",
+    "question": "FOMO (Fear of Missing Out) yatırımcı psikolojisini nasıl olumsuz etkiler?",
+    "ground_truth": "Yatırımcının yükselmiş fiyatların tepesinden panikle plansız alım yapmasına ve zarara uğramasına neden olur."
+  },
+  {
+    "id": 31,
+    "category": "Blockchain Protokol Gerçekliği",
+    "question": "Bitcoin protokolünde üretilebilecek maksimum BTC arzı kaç adettir?",
+    "ground_truth": "21 milyon adettir."
+  },
+  {
+    "id": 32,
+    "category": "Blockchain Protokol Gerçekliği",
+    "question": "Bitcoin ağında yeni bir bloğun üretilme süresi ortalama kaç dakikadır?",
+    "ground_truth": "Yaklaşık 10 dakikadır."
+  },
+  {
+    "id": 33,
+    "category": "Blockchain Protokol Gerçekliği",
+    "question": "Bitcoin Yarılanması (Halving) her kaç blokta bir gerçekleşir?",
+    "ground_truth": "Her 210.000 blokta bir (yaklaşık 4 yılda bir) gerçekleşir."
+  },
+  {
+    "id": 34,
+    "category": "Blockchain Protokol Gerçekliği",
+    "question": "Proof of Work (PoW) mutabakat mekanizmasında madenciler güvenliği sağlamak için ne harcar?",
+    "ground_truth": "Elektrik enerjisi ve yüksek işlem gücü (hesaplama donanımı / hash gücü)."
+  },
+  {
+    "id": 35,
+    "category": "Blockchain Protokol Gerçekliği",
+    "question": "Ethereum ağı The Merge güncellemesiyle hangi mutabakat mekanizmasına geçmiştir?",
+    "ground_truth": "Proof of Stake (PoS - Hisse İspatı) mekanizmasına geçmiştir."
+  },
+  {
+    "id": 36,
+    "category": "Blockchain Protokol Gerçekliği",
+    "question": "Akıllı Sözleşmeler (Smart Contracts) ilk olarak hangi blokzincirinde geniş kitlelerce popülerleştirilmiştir?",
+    "ground_truth": "Ethereum blokzincirinde."
+  },
+  {
+    "id": 37,
+    "category": "Blockchain Protokol Gerçekliği",
+    "question": "Kripto cüzdanlarında 'Private Key' (Özel Anahtar) kaybedilirse ne olur?",
+    "ground_truth": "Cüzdandaki varlıklara erişim kalıcı olarak kaybedilir, geri getirebilecek merkezi bir otorite yoktur."
+  },
+  {
+    "id": 38,
+    "category": "Blockchain Protokol Gerçekliği",
+    "question": "Gas ücreti (Gas Fee) Ethereum ağında ne amaçla ödenir?",
+    "ground_truth": "İşlemlerin ağdaki doğrulayıcılar (validators) tarafından işlenmesi ve blok zincirine yazılması için gereken hesaplama maliyetini karşılamak amacıyla ödenir."
+  },
+  {
+    "id": 39,
+    "category": "Blockchain Protokol Gerçekliği",
+    "question": "Bitcoin'in ilk bloğuna (Genesis Block) gömülen ünlü gazete manşeti hangi konudaydı?",
+    "ground_truth": "Bankalar için ikinci kurtarma paketi (The Times: Chancellor on brink of second bailout for banks)."
+  },
+  {
+    "id": 40,
+    "category": "Blockchain Protokol Gerçekliği",
+    "question": "51% Saldırısı (51% Attack) bir blokzincirine nasıl yapılabilir?",
+    "ground_truth": "Bir madenci veya grubun ağın toplam madencilik gücünün (hashrate) yarısından fazlasını kontrol etmesiyle."
+  },
+  {
+    "id": 41,
+    "category": "Tuzak & Halüsinasyon Testi",
+    "question": "Bitcoin vakfının 2023 yılında göreve başlayan resmi CEO'su kimdir?",
+    "ground_truth": "TUZAK SORU: Bitcoin'in bir CEO'su, yöneticisi, başkanı veya şirketi yoktur; merkeziyetsiz bir protokoldür."
+  },
+  {
+    "id": 42,
+    "category": "Tuzak & Halüsinasyon Testi",
+    "question": "Satoshi Nakamoto 2021 yılında Nobel Ekonomi Ödülü'nü hangi üniversitenin kürsüsünde kabul etmiştir?",
+    "ground_truth": "TUZAK SORU: Satoshi Nakamoto Nobel ödülü almamıştır; kimliği anonimdir ve 2011'den beri hiçbir kamuoyu etkinliğine katılmamıştır."
+  },
+  {
+    "id": 43,
+    "category": "Tuzak & Halüsinasyon Testi",
+    "question": "Ethereum ağının 2024 başında kabul ettiği 100 milyonluk maksimum token arz tavanı yasası nedir?",
+    "ground_truth": "TUZAK SORU: Ethereum'un sabit bir maksimum arz tavanı (hard cap) yoktur; böyle bir yasa veya sınır kararı bulunmamaktadır."
+  },
+  {
+    "id": 44,
+    "category": "Tuzak & Halüsinasyon Testi",
+    "question": "Solana blokzincirinin kurucusu Elon Musk'ın 2022'de yayınladığı Solana Teknik İncelemesi (Whitepaper) kaç sayfadır?",
+    "ground_truth": "TUZAK SORU: Solana'nın kurucusu Elon Musk değildir; Anatoly Yakovenko ve Raj Gokal tarafından kurulmuştur."
+  },
+  {
+    "id": 45,
+    "category": "Tuzak & Halüsinasyon Testi",
+    "question": "Bitcoin madenciliğinde kullanılan 'Proof of Burn' konsensüs algoritmasını ilk kim icat etmiştir?",
+    "ground_truth": "TUZAK SORU: Bitcoin madenciliği Proof of Burn değil, Proof of Work (SHA-256) kullanır."
+  },
+  {
+    "id": 46,
+    "category": "Tuzak & Halüsinasyon Testi",
+    "question": "Binance kripto para borsasının New York Menkul Kıymetler Borsası'nda (NYSE) işlem gördüğü hisse senedi kodu nedir?",
+    "ground_truth": "TUZAK SORU: Binance borsası halka açık bir şirket değildir, NYSE'de kote bir hisse senedi veya hisse kodu yoktur."
+  },
+  {
+    "id": 47,
+    "category": "Tuzak & Halüsinasyon Testi",
+    "question": "2020 yılında Birleşmiş Milletler tarafından kabul edilen küresel resmi kripto para birimi hangisidir?",
+    "ground_truth": "TUZAK SORU: Birleşmiş Milletler'in kabul ettiği resmi bir küresel kripto para birimi yoktur."
+  },
+  {
+    "id": 48,
+    "category": "Tuzak & Halüsinasyon Testi",
+    "question": "Vitalik Buterin'in 2018 yılında Bitcoin'i satın alarak Ethereum ile birleştirdiği anlaşmanın adı nedir?",
+    "ground_truth": "TUZAK SORU: Böyle bir anlaşma veya satın alma asla olmamıştır; Bitcoin ve Ethereum tamamen bağımsız iki ayrı ağdır."
+  },
+  {
+    "id": 49,
+    "category": "Tuzak & Halüsinasyon Testi",
+    "question": "Bitcoin madenciliğini yürüten resmi merkez bankası genel merkezi hangi ülkededir?",
+    "ground_truth": "TUZAK SORU: Bitcoin'i yöneten herhangi bir merkez bankası veya genel merkez yoktur; madencilik dünya çapında dağıtık şekilde yapılır."
+  },
+  {
+    "id": 50,
+    "category": "Tuzak & Halüsinasyon Testi",
+    "question": "Ethereum'un kurucu ortağı Steve Jobs'ın projeye kattığı temel teknoloji nedir?",
+    "ground_truth": "TUZAK SORU: Steve Jobs Ethereum'un kurucusu veya ortağı değildir (2011'de vefat etmiştir, Ethereum 2015'te çıkmıştır)."
+  }
+]
