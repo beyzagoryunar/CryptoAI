@@ -84,7 +84,7 @@ def fetch_fear_greed():
             fng_dict = {}
             for item in data:
                 # Tarih gün bazında: YYYY-MM-DD
-                dt = datetime.datetime.utcfromtimestamp(int(item["timestamp"])).strftime("%Y-%m-%d")
+                dt = datetime.datetime.fromtimestamp(int(item["timestamp"]), datetime.timezone.utc).strftime("%Y-%m-%d")
                 fng_dict[dt] = float(item["value"])
             return fng_dict
     except Exception as e:
